@@ -218,14 +218,14 @@ R3: 10.179.
 
 
 
-R1-Roma: 10.179.7.1/26
+R1-Roma-sw04: R/26
 R1-Romulus: 10.179.7.2/26
 
-R2-Roma: 10.175.7.65/25
+R2-Roma: 10.175.7.65/26
 R2-Milano: 10.179.7.66/26
 R2-Remus: 10.179.7.67/26
-R3-Milano: 10.179.7.129/25
-R3-Leonardo: 19 179.7.130/26
+R3-Milano: 10.179.7.129/26
+R3-Leonardo: 10.179.7.130/26
 
 R4-Paris: 10.179.7.193/26
 R4-Croissant: 10.179.7.194/26
@@ -233,17 +233,17 @@ R4-Croissant: 10.179.7.194/26
 
 Rezultat:
 - Reteaua 1 (VLAN 4):
-    - R1-Roma: 10.179.7.1/26
+    - R1-Roma-sw04: 10.179.7.1/26
     - R1-Romulus: 10.179.7.2/26
 - Reteaua 2 (VLAN 5):
-    - R2-Roma: 10.179.7.65/25
+    - R2-Roma: 10.179.7.65/26
     - R2-Milano: 10.179.7.66/26
     - R2-Remus: 10.179.7.67/26
 - Reteaua 3:
-    - R3-Milano: 10.179.7.129/25
-    - R3-Leonardo: 19 175.7.130/26
+    - R3-Milano: 10.179.7.129/26
+    - R3-Leonardo: 10.179.7.130/26
 - Reteaua 4:
-    - R4-Paris: 10.175.7.193/26
+    - R4-Paris: 10.179.7.193/26
     - R4-Croissant: 10.179.7.194/26
 
 
@@ -251,39 +251,39 @@ Rezultat:
 In `~/.bashrc` de pe `host`:
 
 ```sh
-export IP_R1_Roma="10.179.7.1/26"
+export IP_R1_Roma_sw04="10.179.7.1/26"
 export IP_R1_Romulus="10.179.7.2/26"
 
-export IP_R2_Roma="10.179.7.65/26"
-export IP_R2_Milano="10.179.7.66/26"
+export IP_R2_Roma_sw05="10.179.7.65/26"
+export IP_R2_Milano_to_rome="10.179.7.66/26"
 export IP_R2_Remus="10.179.7.67/26"
 
-export IP_R3_Milano="10.179.7.129/26"
+export IP_R3_Milano_eth_leo="10.179.7.129/26"
 export IP_R3_Leonardo="10.179.7.130/26"
 
-export IP_R4_Paris="10.179.7.193/26"
+export IP_R4_Paris_eth_croiss="10.179.7.193/26"
 export IP_R4_Croissant="10.179.7.194/26"
 ```
 
 
 ```sh
 # Pentru Reteaua 1 (VLAN 4)
-root@Roma:~# ip addr add $IP_R1_Roma dev sw0.4
+root@Roma:~# ip addr add $IP_R1_Roma_sw04 dev sw0.4
 root@Romulus:~# ip addr add $IP_R1_Romulus dev eth0
 
 # Pentru Reteaua 2 (VLAN 5)
-root@Roma:~# ip addr add $IP_R2_Roma dev sw0.5
-root@Milano:~# ip addr add $IP_R2_Milano dev to-rome
+root@Roma:~# ip addr add $IP_R2_Roma_sw05 dev sw0.5
+root@Milano:~# ip addr add $IP_R2_Milano_to_rome dev to-rome
 root@Remus:~# ip addr add $IP_R2_Remus dev eth0
 
 # Pentru Reteaua 3
-root@Milano:~# ip addr add $IP_R3_Milano dev eth-leo
+root@Milano:~# ip addr add $IP_R3_Milano_eth_leo dev eth-leo
 root@Leonardo:~# ip addr add $IP_R3_Leonardo dev eth0
 
 # Pentru Reteaua 4
 # Pe host-ul Paris:
-root@Paris:~# ip addr add $IP_R4_Paris dev eth-croiss
-root@Croissant:~# ip addr add $IP_R4_Croissant dev eth
+root@Paris:~# ip addr add $IP_R4_Paris_eth_croiss dev eth-croiss
+root@Croissant:~# ip addr add $IP_R4_Croissant dev eth0
 ```
 
 
@@ -305,7 +305,7 @@ root@Leonardo:~# ip addr add 10.179.7.130/26 dev eth0
 
 # Pentru Reteaua 4
 root@Paris:~# ip addr add 10.179.7.193/26 dev eth-croiss
-root@Croissant:~# ip addr add 10.179.7.194/26 dev eth
+root@Croissant:~# ip addr add 10.179.7.194/26 dev eth0
 ```
 
 
@@ -338,42 +338,42 @@ R5: 172.30.106.240/30 -> +2^(32-30)-1 = +3 > 172.30.106.243/30
 R6: 172.30.106.244/30 -> +3 > 172.30.106.247/30
 
 
-R5-Host: 172.30.106.241/30
-R5-Paris: 172.30.106.242/30
+R5-Host_to-rome: 172.30.106.241/30
+R5-Roma_to-host: 172.30.106.242/30
 
-R6-Host: 172.30.106.245/30
-R6-Paris: 172.30.106.246/30
+R6-Host_or-paris: 172.30.106.245/30
+R6-Paris_to-host: 172.30.106.246/30
 ```
 
 
 
 Rezultat:
 - Reteaua 5:
-  - R5-Host: 172.30.106.241/30
-  - R5-Roma: 172.30.106.242/30
+  - R5-Host_to-rome: 172.30.106.241/30
+  - R5-Roma_to-host: 172.30.106.242/30
 - Reteaua 6:
-    - R6-Host: 172.30.106.245/30
-    - R6-Paris: 172.30.106.246/30
+    - R6-Host_or-paris: 172.30.106.245/30
+    - R6-Paris_to_host: 172.30.106.246/30
 
 In `~/.bashrc` de pe `host`:
 
 ```sh
-export IP_R5_Host="172.30.106.241/30"
-export IP_R5_Roma="172.30.106.242/30"
+export IP_R5_Host_to_rome="172.30.106.241/30"
+export IP_R5_Roma_to_host="172.30.106.242/30"
 
-export IP_R6_Host="172.30.106.245/30"
-export IP_R6_Paris="172.30.106.246/30"
+export IP_R6_Host_or_paris="172.30.106.245/30"
+export IP_R6_Paris_to_host="172.30.106.246/30"
 ```
 
 
 ```sh
 # Pentru Reteaua 5
-root@host:~# ip addr add $IP_R5_Host dev to-rome
-root@Roma:~# ip addr add $IP_R5_Roma to-host
+root@host:~# ip addr add $IP_R5_Host_to_rome dev to-rome
+root@Roma:~# ip addr add $IP_R5_Roma_to_host to-host
 
 # Pentru Reteaua 6
-root@host:~# ip addr add $IP_R6_Host dev or-paris
-root@Paris:~# ip addr add $IP_R6_Paris dev to-host
+root@host:~# ip addr add $IP_R6_Host_or_paris dev or-paris
+root@Paris:~# ip addr add $IP_R6_Paris_to_host dev to-host
 ```
 
 
@@ -390,7 +390,7 @@ root@Paris:~# ip addr add 172.30.106.246/30 dev to-host
 ```
 
 
-### Task 1.3 | Default Gateway
+### Task 1.3 | Rutare
 
 
 3. Configurați rutarea IPv4 (default GWs și/sau rute statice) astfel încât toate stațiile să se poată accesa unele pe altele prin adresă IP!
@@ -398,31 +398,37 @@ root@Paris:~# ip addr add 172.30.106.246/30 dev to-host
 
 > IP-urile se trec fara mastile de retea :).
 
+
+
+#### Task 1.3 | Rutare | Default Gateways
+
+**Default Gateways**:
 ```sh
 # Pentru Reteaua 1 (VLAN 4)
-root@Romulus:~# ip route add default via $IP_R1_Roma
+root@Romulus:~# ip route add default via $IP_R1_Roma_sw04
 
 # Pentru Reteaua 2 (VLAN 5)
-root@Remus:~# ip route add default via $IP_R2_Roma
-root@Milano:~# ip route add default via $IP_R2_Roma
+root@Remus:~# ip route add default via $IP_R2_Roma_sw05
+root@Milano:~# ip route add default via $IP_R2_Roma_sw05
 
 # Pentru Reteaua 3
-root@Leonardo:~# ip route add default $IP_R3_Milano
+root@Leonardo:~# ip route add default $IP_R3_Milano_eth_leo
 
 
 # Pentru Reteaua 4
-root@Croissant:~# ip route add default via $IP_R4_Paris
+root@Croissant:~# ip route add default via $IP_R4_Paris_eth_croiss
 
 # Pentru Reteaua 5
-root@Roma:~#ip route add default via $IP_R5_Host
+root@Roma:~#ip route add default via $IP_R5_Host_to_rome
 
 # Pentru Reteaua 6
-root@Paris:~#ip route add default via $IP_R6_Host
+root@Paris:~#ip route add default via $IP_R6_Host_or_paris
 ```
 
 
 Adica:
 
+**Default Gateways**:
 ```sh
 # Pentru Reteaua 1 (VLAN 4)
 root@Romulus:~# ip route add default via 10.179.7.1
@@ -441,5 +447,408 @@ root@Croissant:~# ip route add default via 10.179.7.193
 root@Roma:~# ip route add default via 172.30.106.241
 
 # Pentru Reteaua 6
-root@Paris:~# ip route add default via 172.30.106.245
+root@Paris:~# ip route add default via 172.30.106.246
+```
+
+
+
+#### Task 1.3 | Rutare | Rute Statice
+---
+
+
+Reminder:
+- Adresa IP retea R1: 10.179.7.0/26
+- Adresa IP retea R2: 10.179.7.64/26
+- Adresa IP retea R3: 10.179.7.128/26
+- Adresa IP retea R4: 10.179.7.192/26 
+- Adresa IP retea R5: 172.30.106.240/30
+- Adresa IP retea R6: 172.30.106.245/30
+
+
+Reminder:
+| Nume interfata  | Retea | IP                |
+| :---            | :---  | :---              |
+| Roma/sw0.4      | R1    | 10.179.7.1/26     |
+| Roma/sw0.5      | R2    | 10.179.7.65/26    |
+| Milano/to-rome  | R2    | 10.179.7.66/26    |
+| Milano/eth-leo  | R3    | 10.179.7.129/26   |
+| Paris/eth-crois | R4    | 10.179.7.193/26   |
+| host/or-paris   | R6    | 172.30.106.245/30 |
+| Paris/to-host   | R6    | 172.30.106.246/30 |
+| host/to-rome    | R5    | 172.30.106.241/30 |
+| Roma/to-host    | R5    | 172.30.106.242/30 |
+
+
+
+```sh
+root@Roma:~# ip route add 10.179.7.128/26 via 10.179.7.66       # R3 prin Milano
+root@Roma:~# ip route add 10.179.7.192/26 via 10.179.7.66       # R4 prin Milano
+
+root@Roma:~# ip route add 172.30.106.244/30 via 172.30.106.241
+```
+
+```sh
+root@Milano:~# ip route add 10.179.7.0/26 via 10.179.7.65      # R1 prin Roma
+root@Milano:~# ip route add 10.179.7.192/26 via 10.179.7.129   # R4 prin Paris
+root@Milano:~# ip route add 172.30.106.240/30 via 10.179.7.65  # R5 prin Roma
+
+root@Milano:~# ip route add 172.30.106.244/30 via 10.179.7.65  # R6 prin Roma
+```
+
+```sh
+root@Paris:~# ip route add 10.179.7.0/26 via 10.179.7.193        # R1 prin Milano
+root@Paris:~# ip route add 10.179.7.64/26 via 10.179.7.193       # R2 prin Milano
+root@Paris:~# ip route add 10.179.7.128/26 via 10.179.7.193      # R3 prin Milano
+root@Paris:~# ip route add 172.30.106.240/30 via 172.30.106.246  # R5 prin host
+
+root@Paris:~# ip route add 172.30.106.244/30 via 172.30.106.246  # R6 prin host
+
+```
+
+
+```sh
+root@Host:~# ip route add 10.179.7.0/26 via 172.30.106.242    # R1 prin Roma
+root@Host:~# ip route add 10.179.7.64/26 via 172.30.106.242   # R2 prin Roma
+root@Host:~# ip route add 10.179.7.128/26 via 172.30.106.242  # R3 prin Roma
+root@Host:~# ip route add 10.179.7.192/26 via 172.30.106.246  # R4 prin Paris
+```
+
+
+```sh
+$ sudo sysctl -w net.ipv4.ip_forward=1
+$ nano -l  /etc/sysctl.conf # Linia 28
+```
+
+
+### Task 3 | Accessing Hosts
+
+
+Editeaza cu `nano`/`vim` textele printate cu **cat**.
+
+#### Task 3 | Accessing Hosts | **host** (router)
+
+
+```sh
+root@host:~# touch /etc/hosts.orig
+root@host:~# nano -l /etc/hosts.orig
+root@host:~# cat /etc/hosts.orig
+127.0.0.1 localhost
+127.0.1.1 host
+
+# IPv4 of Roma/to-host (router/interface)
+172.30.106.242 Roma
+
+# IPv4 of Milano/to-rome (router/interface)
+10.179.7.66 Milano
+
+# IPv4 of Paris/to-host (router/interface)
+172.30.106.246 Paris
+
+# IPv4 of end-devices
+10.179.7.2 Romulus
+10.179.7.67 Remus
+10.179.7.130 Leonardo
+10.179.7.194 Croissant
+
+
+# The following lines are desirable for IPv6 capable hosts
+::1     ip6-localhost ip6-loopback
+fe00::0 ip6-localnet
+ff00::0 ip6-mcastprefix
+ff02::1 ip6-allnodes
+ff02::2 ip6-allrouters
+
+
+root@host:~# nano -l /etc/network/interfaces.d/rl.conf
+root@host:~# cat /etc/network/interfaces.d/rl.conf
+iface eth0
+	up cat /etc/hosts.orig > /etc/hosts
+```
+
+**Romulus**:
+```sh
+root@Romulus:~# cat /etc/hosts
+127.0.0.1 localhost Romulus
+
+
+
+# IPv4 of Roma/sw0.4 (router/interface)
+10.179.7.1 Roma
+
+# IPv4 of Milano/to-rome (router/interface)
+10.179.7.66 Milano
+
+# IPv4 of Paris/to-host (router/interface)
+172.30.106.246 Paris
+
+# IPv4 of end-devices
+10.179.7.67 Remus
+10.179.7.130 Leonardo
+10.179.7.194 Croissant
+
+# IPv6
+::1	localhost ip6-localhost ip6-loopback
+fe00::0	ip6-localnet
+ff00::0	ip6-mcastprefix
+ff02::1	ip6-allnodes
+ff02::2	ip6-allrouters
+
+root@Romulus:~# cat /etc/network/interfaces.d/rl.conf 
+# Tema 2 RL - Interface configuration (on ifupdown-ng)
+# RTFM: https://github.com/ifupdown-ng/ifupdown-ng/blob/main/doc/interfaces.scd
+
+# Example entry:
+#auto eth0
+#iface eth0
+#	address 203.0.113.2/24
+#	gateway 203.0.113.1
+
+iface eth0
+	up cat /etc/hosts.orig > /etc/hosts
+```
+
+
+## Task 3 | Accessing Hosts | **Remus** (end-device)
+
+```sh
+root@Remus:~# nano -l /etc/hosts.orig 
+127.0.0.1 localhost Remus
+
+# IPv4 of host/to-rome (router/interface)
+172.30.106.241 host
+
+# IPv4 of Roma/sw0.5 (router/interface)
+10.179.7.65 Roma
+
+# IPv4 of Milano/to-rome (router/interface)
+10.179.7.66 Milano
+
+# IPv4 of Paris/to-host (router/interface)
+172.30.106.246 Paris
+
+# IPv4 of end-devices
+10.179.7.2 Romulus
+10.179.7.130 Leonardo
+10.179.7.194 Croissant
+
+# IPv6
+::1	localhost ip6-localhost ip6-loopback
+fe00::0	ip6-localnet
+ff00::0	ip6-mcastprefix
+ff02::1	ip6-allnodes
+ff02::2	ip6-allrouters
+
+
+root@Remus:~# cat /etc/network/interfaces.d/rl.conf 
+# Tema 2 RL - Interface configuration (on ifupdown-ng)
+# RTFM: https://github.com/ifupdown-ng/ifupdown-ng/blob/main/doc/interfaces.scd
+
+# Example entry:
+#auto eth0
+#iface eth0
+#	address 203.0.113.2/24
+#	gateway 203.0.113.1
+
+
+iface eth0
+	up cat /etc/hosts.orig > /etc/hosts
+```
+
+
+
+#### Task 3 | Accessing Hosts | **Leonardo** (end-device)
+
+```sh
+root@Leonardo:~# cat /etc/hosts.orig 
+127.0.0.1 localhost Leonardo
+
+
+# IPv4 of host/to-rome (router/interface)
+172.30.106.241 host
+
+# IPv4 of Roma/sw0.5 (router/interface)
+10.179.7.65 Roma
+
+# IPv4 of Milano/eth-leo (router/interface)
+10.179.7.129 Milano
+
+# IPv4 of Paris/to-host (router/interface)
+172.30.106.246 Paris
+
+# IPv4 of end-devices
+10.179.7.2 Romulus
+10.179.7.67 Remus
+10.179.7.194 Croissant
+
+
+# IPv6
+::1	localhost ip6-localhost ip6-loopback
+fe00::0	ip6-localnet
+ff00::0	ip6-mcastprefix
+ff02::1	ip6-allnodes
+ff02::2	ip6-allrouters
+
+root@Leonardo:~# cat /etc/network/interfaces.d/rl.conf 
+# Tema 2 RL - Interface configuration (on ifupdown-ng)
+# RTFM: https://github.com/ifupdown-ng/ifupdown-ng/blob/main/doc/interfaces.scd
+
+# Example entry:
+#auto eth0
+#iface eth0
+#	address 203.0.113.2/24
+#	gateway 203.0.113.1
+
+
+iface eth0
+	up cat /etc/hosts.orig > /etc/hosts
+```
+
+
+
+
+#### Task 3 | Accessing Hosts | **Croissant** (end-device)
+
+```sh
+root@Croissant:~# cat /etc/hosts.orig 
+127.0.0.1 localhost Croissant
+
+# IPv4 of host/or-paris (router/interface)
+172.30.106.245 host
+
+# IPv4 of Paris/eth-croiss (router/interface)
+10.179.7.193 Paris
+
+# IPv4 of Roma/to-host (router/interface)
+172.30.106.242 Roma
+
+# IPv4 of Milano/to-rome (router/interface)
+10.179.7.66 Milano
+
+
+# IPv4 of end-devices
+10.179.7.2 Romulus
+10.179.7.67 Remus
+10.179.7.130 Leonardo
+
+
+# IPv6
+::1	localhost ip6-localhost ip6-loopback
+fe00::0	ip6-localnet
+ff00::0	ip6-mcastprefix
+ff02::1	ip6-allnodes
+ff02::2	ip6-allrouters
+
+root@Croissant:~# cat /etc/network/interfaces.d/rl.conf 
+# Tema 2 RL - Interface configuration (on ifupdown-ng)
+# RTFM: https://github.com/ifupdown-ng/ifupdown-ng/blob/main/doc/interfaces.scd
+
+# Example entry:
+#auto eth0
+#iface eth0
+#	address 203.0.113.2/24
+#	gateway 203.0.113.1
+
+
+iface eth0
+	up cat /etc/hosts.orig > /etc/hosts
+```
+
+
+#### Task 3 | Accesing Hosts | **Roma** (router)
+
+```sh
+root@Roma:~# cat /etc/hosts.orig 
+127.0.0.1 localhost Roma
+
+
+# IPv4 of host/to-rome (router/interface)
+172.30.106.241 host
+
+# IPv4 of Milano/to-rome (router/interface)
+10.179.7.66 Milano
+
+# IPv4 of Paris/to-host (router/interface)
+172.30.106.246 Paris
+
+# IPv4 of end-devices
+10.179.7.2 Romulus
+10.179.7.67 Remus
+10.179.7.130 Leonardo
+10.179.7.194 Croissant
+
+
+# IPv6
+::1	localhost ip6-localhost ip6-loopback
+fe00::0	ip6-localnet
+ff00::0	ip6-mcastprefix
+ff02::1	ip6-allnodes
+ff02::2	ip6-allrouters
+
+root@Roma:~# cat /etc/network/interfaces.d/rl.conf 
+# Sample ifupdown network interfaces config
+
+auto to-host
+iface to-host
+	#address <CIDR/prefix notation>
+	
+# VLAN4 sub-interface
+auto sw0.4
+iface sw0.4
+	#address <CIDR/prefix notation>
+
+# VLAN5 sub-interface
+auto sw0.5
+iface sw0.5
+	#address <CIDR/prefix notation>
+
+iface to-host
+	up cat /etc/hosts.orig > /etc/hosts
+```
+
+
+
+#### Task 3 | Accesing Hosts | **Paris** (router)
+
+
+
+```sh
+root@Paris:~# cat /etc/hosts.orig 
+127.0.0.1 localhost Paris
+
+# IPv4 of host/or-paris
+172.30.106.245 host
+
+# IPv4 of Roma/to-host
+172.30.106.242 Roma
+
+# IPv4 of Milano/to-rome
+10.179.7.66 Milano
+
+# IPv4 of end-devices
+10.179.7.2 Romulus
+10.179.7.67 Remus
+10.179.7.130 Leonardo
+10.179.7.194 Croissant
+
+# IPv6
+::1	localhost ip6-localhost ip6-loopback
+fe00::0	ip6-localnet
+ff00::0	ip6-mcastprefix
+ff02::1	ip6-allnodes
+ff02::2	ip6-allrouters
+
+root@Paris:~# cat /etc/network/interfaces.d/rl.conf 
+# Sample ifupdown network interfaces config
+
+auto to-host
+iface to-host
+	#address <CIDR/prefix notation>
+
+auto eth-croiss
+iface eth-croiss
+	#address <CIDR/prefix notation>
+
+iface to-host
+	up cat /etc/hosts.orig > /etc/hosts
+root@Paris:~# 
 ```
