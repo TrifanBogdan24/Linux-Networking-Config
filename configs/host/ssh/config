@@ -1,0 +1,14 @@
+Host romu
+	User student
+	HostName Romulus
+	IdentityFile /home/student/.ssh/ssh-key-romu
+
+Host remu
+	User student
+	HostName Remus
+	IdentityFile /home/student/.ssh/ssh-key-remu
+
+Host leo
+	User student
+	HostName Leonardo
+	IdentityFile /home/student/.ssh/ssh-key-leo

@@ -1,47 +1,48 @@
 # Sample ifupdown network interfaces config
 
 auto to-host
-iface to-host
-	#address <CIDR/prefix notation>
-	up ip link add link sw0 name sw0.4 type vlan id 4
-	up ip link add link sw0 name sw0.5 type vlan id 5
-	up ip link set sw0.4 up
-	up ip link set sw0.5 up
-	address 172.30.106.242/30
-	gateway 172.30.106.241
-	
-	# Alias-uri pentru IP-uri
-	up cat /etc/hosts.orig > /etc/hosts
+iface to-host inet static
+    address 172.30.106.242/30
+    gateway 172.30.106.241
+    
+    # Alias-uri pentru IP-uri
+    up cat /etc/hosts.orig > /etc/hosts
 
-	# Splitting into 2 sub-interfaces for VLAN 4  and VLAN 5
-	up ip link add link sw0 name sw0.4 type vlan id 4
-	up ip link add link sw0 name sw0.5 type vlan id 5
-	up ip link set sw0.4 up
-	up ip link set sw0.5 up
+    # Imparte interfata in 2 sub-interfete (logice)  pentru VLAN 4 si VLAN 5
+    up ip link add link sw0 name sw0.4 type vlan id 4
+    up ip link add link sw0 name sw0.5 type vlan id 5
+    up ip link set sw0.4 up
+    up ip link set sw0.5 up
 
-	# Placing IPv4 on sub-interfaces
-	up ip addr add 10.179.7.1/26 dev sw0.4
-	up ip addr add 10.179.7.65/26 dev sw0.5
+    # IPv4 pe sub-interfete
+    up ip addr add 10.179.7.1/26 dev sw0.4
+    up ip addr add 10.179.7.65/26 dev sw0.5
 
+    # IPv6 pe sub-interfete
+    up ip -6 addr add 2024:baba:07:179:004::1/96 dev sw0.4
+    up ip -6 addr add 2024:baba:07:179:005::1/96 dev sw0.5
+    up ip -6 addr add fdee:dada:106:171::2/64 dev to-host
 
-	# R3 via Milano/to-rome
-	up ip route add 10.179.7.128/26 via 10.179.7.66
-
-	# Activam sa forwardeze pachete
-	up sysctl -w net.ipv4.ip_forward=1
-
-
+    # R3 via Milano/to-rome
+    up ip route add 10.179.7.128/26 via 10.179.7.66
 
 
 # VLAN4 sub-interface
 auto sw0.4
-iface sw0.4
-	#address <CIDR/prefix notation>
-	address 10.179.7.1/26
+
+iface sw0.4 inet static
+    address 10.179.7.1/26
+
+iface sw0.4 inet6 static
+    address 2024:baba:07:179:004::1/96
+
 
 
 # VLAN5 sub-interface
 auto sw0.5
-iface sw0.5
-	#address <CIDR/prefix notation>
-	address 10.179.7.65/26
+
+iface sw0.5 inet static
+    address 10.179.7.65/26
+
+iface sw0.5 inet6 static
+    address 2024:baba:07:179:005::1/96

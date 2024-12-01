@@ -8,8 +8,12 @@
 #	gateway 203.0.113.1
 
 auto eth0
-iface eth0
+
+iface eth0 inet static
 	address 10.179.7.2/26
 	gateway 10.179.7.1
 	# Alias-uri pentru IP-uri
-	up cat /etc/hosts.orig > /etc/hosts	
+	up cat /etc/hosts.orig > /etc/hosts
+
+iface eth0 inet6 static
+	address 2024:baba:07:179:004::2/96

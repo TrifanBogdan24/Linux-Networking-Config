@@ -7,23 +7,24 @@
   - [Conectarre prin SSH](#conectarre-prin-ssh)
   - [Asignment](#asignment)
   - [Conectarea prin echipamente](#conectarea-prin-echipamente)
-  - [Task](#task)
-    - [Task1](#task1)
-      - [Task 1.1 | Subnetare FIXA](#task-11--subnetare-fixa)
-      - [Task 1.2 | Subnetarea VARIABILA (VLSM)](#task-12--subnetarea-variabila-vlsm)
+  - [Task1](#task1)
+    - [Task 1.1 | Subnetare FIXA](#task-11--subnetare-fixa)
+    - [Task 1.2 | Subnetarea VARIABILA (VLSM)](#task-12--subnetarea-variabila-vlsm)
     - [Task 1.3 | Rutare](#task-13--rutare)
+    - [Task 1.3 | Rutare | Default Gateways](#task-13--rutare--default-gateways)
+    - [Task 1.3 | Rutare | Rute Statice](#task-13--rutare--rute-statice)
     - [Task 1.3 | Persistenta la restart](#task-13--persistenta-la-restart)
-      - [Task 1.3 | Rutare | Default Gateways](#task-13--rutare--default-gateways)
-      - [Task 1.3 | Rutare | Rute Statice](#task-13--rutare--rute-statice)
-    - [Task 2 | Subnetare IPv6](#task-2--subnetare-ipv6)
-    - [Task 3 | Accessing Hosts](#task-3--accessing-hosts)
-      - [Task 3 | Accessing Hosts | **host** (router)](#task-3--accessing-hosts--host-router)
-      - [Task 3 | Accessing Hosts | **Remus** (end-device)](#task-3--accessing-hosts--remus-end-device)
-      - [Task 3 | Accessing Hosts | **Leonardo** (end-device)](#task-3--accessing-hosts--leonardo-end-device)
-      - [Task 3 | Accessing Hosts | **Croissant** (end-device)](#task-3--accessing-hosts--croissant-end-device)
-      - [Task 3 | Accesing Hosts | **Roma** (router)](#task-3--accesing-hosts--roma-router)
-      - [Task 3 | Accesing Hosts | **Milano** (router)](#task-3--accesing-hosts--milano-router)
-      - [Task 3 | Accesing Hosts | **Paris** (router)](#task-3--accesing-hosts--paris-router)
+  - [Task 2 | Subnetare IPv6](#task-2--subnetare-ipv6)
+  - [Task 3 | Accessing Hosts](#task-3--accessing-hosts)
+    - [Task 3 | Accessing Hosts | **host** (router)](#task-3--accessing-hosts--host-router)
+    - [Task 3 | Accessing Hosts | **Remus** (end-device)](#task-3--accessing-hosts--remus-end-device)
+    - [Task 3 | Accessing Hosts | **Leonardo** (end-device)](#task-3--accessing-hosts--leonardo-end-device)
+    - [Task 3 | Accessing Hosts | **Croissant** (end-device)](#task-3--accessing-hosts--croissant-end-device)
+    - [Task 3 | Accesing Hosts | **Roma** (router)](#task-3--accesing-hosts--roma-router)
+    - [Task 3 | Accesing Hosts | **Milano** (router)](#task-3--accesing-hosts--milano-router)
+    - [Task 3 | Accesing Hosts | **Paris** (router)](#task-3--accesing-hosts--paris-router)
+    - [Task 7 | SSH Keys](#task-7--ssh-keys)
+      - [Task 7 | SSH Keys | Host -\> ...](#task-7--ssh-keys--host---)
 
 ```
 t2start bogdan.trifan2412
@@ -200,13 +201,11 @@ root@host: go Roma
 
 
 
-## Task
+
+## Task1
 
 
-### Task1
-
-
-#### Task 1.1 | Subnetare FIXA
+### Task 1.1 | Subnetare FIXA
 
 1. Subnetați FIX (i.e., dimensiuni egale, maximizare nr. de stații) spațiul 10.$A.$B.0/24 și configurați cu adrese IPv4 toate legăturile din topologie în ordinea cerută (începând cu PRIMA adresă asignabilă), astfel:
 - prima subrețea alocată va fi VLAN4, asignare în ordinea: Roma, Romulus;
@@ -341,7 +340,7 @@ root@Croissant:~# ip addr add 10.179.7.194/26 dev eth0
 
 
 
-#### Task 1.2 | Subnetarea VARIABILA (VLSM)
+### Task 1.2 | Subnetarea VARIABILA (VLSM)
 
 2. Subnetați OPTIM spațiul 172.30.$C.240/28 + configurați echipamentele (host va avea mereu prima adresă asignabilă) astfel:
 - o rețea între host și Roma;
@@ -431,12 +430,11 @@ root@Paris:~# ip addr add 172.30.106.246/30 dev to-host
 
 
 
-### Task 1.3 | Persistenta la restart
 
 
 
 
-#### Task 1.3 | Rutare | Default Gateways
+### Task 1.3 | Rutare | Default Gateways
 
 **Default Gateways**:
 ```sh
@@ -488,7 +486,7 @@ root@Paris:~# ip route add default via 172.30.106.245
 
 
 
-#### Task 1.3 | Rutare | Rute Statice
+### Task 1.3 | Rutare | Rute Statice
 ---
 
 
@@ -565,8 +563,18 @@ root@Roma:~# ip route add 10.179.7.128/26 via 10.179.7.66
 ```
 
 
+### Task 1.3 | Persistenta la restart
+---
 
-### Task 2 | Subnetare IPv6
+
+Pentru fiecare router (inclusiv host),
+decomenteaza linia care contine `net.ipv4.ip_forward=1` (linia **28**) din fisierul `/etc/sysctl.conf`.
+
+In rest, uita-te la fisierele din directorul [configs/](configs/).
+
+
+
+## Task 2 | Subnetare IPv6
 
 
 Configurați adrese IPv6 pentru rețeaua VLAN4 și VLAN5 (notă: variabila $VLANID va avea valoarea 4, respectiv 5, cu zero-uri în față până la completarea segmentului de 16 biți):
@@ -580,12 +588,32 @@ Atenție: echipamentele Leonardo, Paris și Croissant NU vor avea adresă IPv6!
 
 
 
-### Task 3 | Accessing Hosts
+
+```sh
+# VLAN 4
+root@roma:~# ip -6 addr add 2024:baba:07:179:004::1/96 dev sw0.4
+root@romulus:~# ip -6 addr add 2024:baba:07:179:004::2/96 dev eth0
+
+
+# VLAN 5
+root@roma:~# ip -6 addr add 2024:baba:07:179:005::1/96 dev sw0.5
+root@milano:~# ip -6 addr add 2024:baba:07:179:005::2/96 dev to-rome
+root@remus:~# ip -6 addr add 2024:baba:07:179:005::3/96 dev eth0
+
+
+# Host-Roma
+root@host:~# ip -6 addr add fdee:dada:106:171::1/64 dev to-rome
+root@roma:~# ip -6 addr add fdee:dada:106:171::2/64 dev to-host
+```
+
+
+
+## Task 3 | Accessing Hosts
 
 
 Editeaza cu `nano`/`vim` textele printate cu **cat**.
 
-#### Task 3 | Accessing Hosts | **host** (router)
+### Task 3 | Accessing Hosts | **host** (router)
 
 
 ```sh
@@ -668,7 +696,7 @@ iface eth0
 ```
 
 
-#### Task 3 | Accessing Hosts | **Remus** (end-device)
+### Task 3 | Accessing Hosts | **Remus** (end-device)
 
 ```sh
 root@Remus:~# nano -l /etc/hosts.orig 
@@ -716,7 +744,7 @@ iface eth0
 
 
 
-#### Task 3 | Accessing Hosts | **Leonardo** (end-device)
+### Task 3 | Accessing Hosts | **Leonardo** (end-device)
 
 ```sh
 root@Leonardo:~# cat /etc/hosts.orig 
@@ -766,7 +794,7 @@ iface eth0
 
 
 
-#### Task 3 | Accessing Hosts | **Croissant** (end-device)
+### Task 3 | Accessing Hosts | **Croissant** (end-device)
 
 ```sh
 root@Croissant:~# cat /etc/hosts.orig 
@@ -814,7 +842,7 @@ iface eth0
 ```
 
 
-#### Task 3 | Accesing Hosts | **Roma** (router)
+### Task 3 | Accesing Hosts | **Roma** (router)
 
 ```sh
 root@Roma:~# cat /etc/hosts.orig 
@@ -867,12 +895,12 @@ iface to-host
 
 
 
-#### Task 3 | Accesing Hosts | **Milano** (router)
+### Task 3 | Accesing Hosts | **Milano** (router)
 
 
 
 
-#### Task 3 | Accesing Hosts | **Paris** (router)
+### Task 3 | Accesing Hosts | **Paris** (router)
 
 
 
@@ -917,3 +945,26 @@ iface to-host
 	up cat /etc/hosts.orig > /etc/hosts
 root@Paris:~# 
 ```
+
+
+### Task 7 | SSH Keys
+
+
+> In caz sa trebuie sa refaci de la 0 generarea cheilor SSH, uita-te in directorul `/configs/` dupa perechile de chei SSH, da paste la ele si doar `ssh-add`.
+
+
+#### Task 7 | SSH Keys | Host -> ...
+
+```sh
+# Generating SSH key-pairs for other devices, for HOST to connect to
+student@host:~$ ssh-keygen -t ed25519 -f /home/student/.ssh/ssh-key-romu -N ""
+student@host:~$ ssh-keygen -t ed25519 -f /home/student/.ssh/ssh-key-remu -N ""
+student@host:~$ ssh-keygen -t ed25519 -f /home/student/.ssh/ssh-key-leo -N ""
+```
+
+
+```sh
+student@host:~$ 
+```
+
+

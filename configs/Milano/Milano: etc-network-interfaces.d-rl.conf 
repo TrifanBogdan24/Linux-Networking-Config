@@ -1,15 +1,22 @@
 # Sample ifupdown network interfaces config
 
 auto to-rome
-iface to-rome
+
+iface to-rome inet static
 	#address <CIDR/prefix notation>
 	address 10.179.7.66/26
 	gateway 10.179.7.65
+	
 	# Alias-uri pentru IP-uri
 	up cat /etc/hosts.orig > /etc/hosts
 
+iface to-rome inet6 static
+	address 2024:baba:07:179:005::2/96
+
+
+
 auto eth-leo
-iface eth-leo
+iface eth-leo inet static
 	#address <CIDR/prefix notation>
 	address 10.179.7.129/26
 	# Alias-uri pentru IP-uri
