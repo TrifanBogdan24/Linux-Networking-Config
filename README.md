@@ -22,6 +22,7 @@
       - [Task 3 | Accessing Hosts | **Leonardo** (end-device)](#task-3--accessing-hosts--leonardo-end-device)
       - [Task 3 | Accessing Hosts | **Croissant** (end-device)](#task-3--accessing-hosts--croissant-end-device)
       - [Task 3 | Accesing Hosts | **Roma** (router)](#task-3--accesing-hosts--roma-router)
+      - [Task 3 | Accesing Hosts | **Milano** (router)](#task-3--accesing-hosts--milano-router)
       - [Task 3 | Accesing Hosts | **Paris** (router)](#task-3--accesing-hosts--paris-router)
 
 ```
@@ -541,62 +542,27 @@ export IP_R6_Paris_to_host="172.30.106.246"
 ```
 
 
-
 ```sh
-root@host:~# ip route add $IP_NETWORK_R6 via $IP_R5_Host_to_rome
-root@host:~# ip route add $IP_NETWORK_R5 via $IP_R6_Host_or_paris
-```
+root@host:~# ip route add $IP_R4 via $IP_Paris_to_host
 
-```sh
-root@Roma:~# ip route add $IP_NETWORK_R5 via $IP_R1_Roma_sw04
-root@Roma:~# ip route add $IP_NETWORK_R5 via $IP_R1_Roma_sw05
-```
-
-```sh
-root@Milano:~# ip route add $IP_NETWORK_R2 via $IP_R3_Milano_eth_leo
-```
-
-```sh
-root@Paris:~# ip route add $IP_NETWORK_R6 via $IP_R6_Paris_to_host
-```
+root@host:~# ip route add $IP_R1 via $IP_Roma_to_host
+root@host:~# ip route add $IP_R2 via $IP_Roma_to_host
+root@host:~# ip route add $IP_R3 via $IP_Roma_to_host
 
 
-
-Adica:
-
-
-
-```sh
-root@host:~# ip route add 172.30.106.244/30 via 172.30.106.241
-root@host:~# ip route add 172.30.106.240/30 via 172.30.106.245
-```
-
-```sh
-root@Roma:~# ip route add 172.30.106.240/30 via 10.179.7.1
-root@Roma:~# ip route add 172.30.106.240/30 via 10.179.7.65
-```
-
-```sh
-root@Milano:~# ip route add 10.179.7.64/26 via 10.179.7.129
+root@Roma:~# ip route add $IP_R3 via $IP_R2_Milano_to_rome
 ```
 
 
 ```sh
-root@Paris:~# ip route add 172.30.106.245/30 via 10.179.7.193
+root@host:~# ip route add 10.179.7.192/26 via 172.30.106.246
+
+root@host:~# ip route add 10.179.7.0/26 via 172.30.106.242
+root@host:~# ip route add 10.179.7.64/26 via 172.30.106.242
+root@host:~# ip route add 10.179.7.128/26 via 172.30.106.242
+
+root@Roma:~# ip route add 10.179.7.128/26 via 10.179.7.66
 ```
-
-
-```sh
-# Setarea de IP Forward
-$ sudo sysctl -w net.ipv4.ip_forward=1
-$ nano -l  /etc/sysctl.conf # Linia 28
-```
-
-```sh
-# Verificare
-$ sysctl net.ipv4.ip_forward
-```
-
 
 
 
@@ -898,6 +864,11 @@ iface sw0.5
 iface to-host
 	up cat /etc/hosts.orig > /etc/hosts
 ```
+
+
+
+#### Task 3 | Accesing Hosts | **Milano** (router)
+
 
 
 

@@ -6,3 +6,12 @@ iface eth0
 	up ip addr add 172.30.106.241/30 dev to-rome        
 	# IPv4 (Host/or-paris)
 	up ip addr add 172.30.106.245/30 dev or-paris
+	
+	# Rute statice
+	# R4 via Paris/to-host
+	up ip route add 10.179.7.192/26 via 172.30.106.246
+	# R1, R2, R3 via Rome/to-host
+	up ip route add 10.179.7.0/26 via 172.30.106.242
+	up ip route add 10.179.7.64/26 via 172.30.106.242
+	up ip route add 10.179.7.128/26 via 172.30.106.242
+

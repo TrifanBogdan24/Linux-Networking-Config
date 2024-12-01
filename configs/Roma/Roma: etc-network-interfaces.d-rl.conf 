@@ -3,19 +3,41 @@
 auto to-host
 iface to-host
 	#address <CIDR/prefix notation>
+	up ip link add link sw0 name sw0.4 type vlan id 4
+	up ip link add link sw0 name sw0.5 type vlan id 5
+	up ip link set sw0.4 up
+	up ip link set sw0.5 up
 	address 172.30.106.242/30
 	gateway 172.30.106.241
+	
 	# Alias-uri pentru IP-uri
 	up cat /etc/hosts.orig > /etc/hosts
 
+	# Splitting into 2 sub-interfaces for VLAN 4  and VLAN 5
+	up ip link add link sw0 name sw0.4 type vlan id 4
+	up ip link add link sw0 name sw0.5 type vlan id 5
+	up ip link set sw0.4 up
+	up ip link set sw0.5 up
 
-	
+	# Placing IPv4 on sub-interfaces
+	up ip addr add 10.179.7.1/26 dev sw0.4
+	up ip addr add 10.179.7.65/26 dev sw0.5
+
+
+	# R3 via Milano/to-rome
+	up ip route add 10.179.7.128/26 via 10.179.7.66
+
+	# Activam sa forwardeze pachete
+	up sysctl -w net.ipv4.ip_forward=1
+
+
+
+
 # VLAN4 sub-interface
 auto sw0.4
 iface sw0.4
 	#address <CIDR/prefix notation>
 	address 10.179.7.1/26
-	up cat /etc/hosts.orig > /etc/hosts
 
 
 # VLAN5 sub-interface
@@ -23,5 +45,3 @@ auto sw0.5
 iface sw0.5
 	#address <CIDR/prefix notation>
 	address 10.179.7.65/26
-	# Alias-uri pentru IP-uri
-	up cat /etc/hosts.orig > /etc/hosts
