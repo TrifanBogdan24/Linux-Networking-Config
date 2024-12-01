@@ -1,0 +1,27 @@
+# Sample ifupdown network interfaces config
+
+auto to-host
+iface to-host
+	#address <CIDR/prefix notation>
+	address 172.30.106.242/30
+	gateway 172.30.106.241
+	# Alias-uri pentru IP-uri
+	up cat /etc/hosts.orig > /etc/hosts
+
+
+	
+# VLAN4 sub-interface
+auto sw0.4
+iface sw0.4
+	#address <CIDR/prefix notation>
+	address 10.179.7.1/26
+	up cat /etc/hosts.orig > /etc/hosts
+
+
+# VLAN5 sub-interface
+auto sw0.5
+iface sw0.5
+	#address <CIDR/prefix notation>
+	address 10.179.7.65/26
+	# Alias-uri pentru IP-uri
+	up cat /etc/hosts.orig > /etc/hosts

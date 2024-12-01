@@ -1,0 +1,17 @@
+# Sample ifupdown network interfaces config
+
+auto to-host
+iface to-host
+	#address <CIDR/prefix notation>
+	address 172.30.106.246/30
+	gateway 172.30.106.245
+	# Alias-uri pentru IP-uri
+	up cat /etc/hosts.orig > /etc/hosts
+
+auto eth-croiss
+iface eth-croiss
+	#address <CIDR/prefix notation>
+	address 10.179.7.193/26 
+	# Alias-uri pentru IP-uri
+	up cat /etc/hosts.orig > /etc/hosts
+

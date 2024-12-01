@@ -1,0 +1,12 @@
+USERNAME=bogdan.trifan2412
+A=179
+B=7
+C=106
+D=171
+E=158
+F=73
+G=13
+H=27
+I=46
+J=214
+K=80

@@ -1,0 +1,27 @@
+127.0.0.1 localhost Leonardo
+
+
+# IPv4 of host/to-rome (router/interface)
+172.30.106.241 host
+
+# IPv4 of Roma/sw0.5 (router/interface)
+10.179.7.65 Roma
+
+# IPv4 of Milano/eth-leo (router/interface)
+10.179.7.129 Milano
+
+# IPv4 of Paris/to-host (router/interface)
+172.30.106.246 Paris
+
+# IPv4 of end-devices
+10.179.7.2 Romulus
+10.179.7.67 Remus
+10.179.7.194 Croissant
+
+
+# IPv6
+::1	localhost ip6-localhost ip6-loopback
+fe00::0	ip6-localnet
+ff00::0	ip6-mcastprefix
+ff02::1	ip6-allnodes
+ff02::2	ip6-allrouters

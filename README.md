@@ -1,7 +1,36 @@
-# 
+# Rezolvare Tema 2 Retele Locale
+
+
+*Cuprins*:
+- [Rezolvare Tema 2 Retele Locale](#rezolvare-tema-2-retele-locale)
+  - [Topologie](#topologie)
+  - [Conectarre prin SSH](#conectarre-prin-ssh)
+  - [Asignment](#asignment)
+  - [Conectarea prin echipamente](#conectarea-prin-echipamente)
+  - [Task](#task)
+    - [Task1](#task1)
+      - [Task 1.1 | Subnetare FIXA](#task-11--subnetare-fixa)
+      - [Task 1.2 | Subnetarea VARIABILA (VLSM)](#task-12--subnetarea-variabila-vlsm)
+    - [Task 1.3 | Rutare](#task-13--rutare)
+    - [Task 1.3 | Persistenta la restart](#task-13--persistenta-la-restart)
+      - [Task 1.3 | Rutare | Default Gateways](#task-13--rutare--default-gateways)
+      - [Task 1.3 | Rutare | Rute Statice](#task-13--rutare--rute-statice)
+    - [Task 2 | Subnetare IPv6](#task-2--subnetare-ipv6)
+    - [Task 3 | Accessing Hosts](#task-3--accessing-hosts)
+      - [Task 3 | Accessing Hosts | **host** (router)](#task-3--accessing-hosts--host-router)
+      - [Task 3 | Accessing Hosts | **Remus** (end-device)](#task-3--accessing-hosts--remus-end-device)
+      - [Task 3 | Accessing Hosts | **Leonardo** (end-device)](#task-3--accessing-hosts--leonardo-end-device)
+      - [Task 3 | Accessing Hosts | **Croissant** (end-device)](#task-3--accessing-hosts--croissant-end-device)
+      - [Task 3 | Accesing Hosts | **Roma** (router)](#task-3--accesing-hosts--roma-router)
+      - [Task 3 | Accesing Hosts | **Paris** (router)](#task-3--accesing-hosts--paris-router)
 
 ```
 t2start bogdan.trifan2412
+```
+
+
+```
+ip route add <adresa_retea>/<masca_subretea> via <gateway>
 ```
 
 ## Topologie
@@ -214,7 +243,8 @@ Format: `Retea: prima adresa IP -> ultima adresa IP`
 
 R1: 10.179.7.0/26 -> +2^(32-26)-1 = +63 -> 10.179.7.63/26
 R2: 10.179.7.64/26 -> +63 -> 10.179.6.127/26
-R3: 10.179.
+R3: 10.179.7.128/26 -> +63 -> 10.179.7.191/26
+R4: 10.179.7.192/26 -> +63 -> 10.179.7.255/26
 
 
 
@@ -400,6 +430,11 @@ root@Paris:~# ip addr add 172.30.106.246/30 dev to-host
 
 
 
+### Task 1.3 | Persistenta la restart
+
+
+
+
 #### Task 1.3 | Rutare | Default Gateways
 
 **Default Gateways**:
@@ -447,7 +482,7 @@ root@Croissant:~# ip route add default via 10.179.7.193
 root@Roma:~# ip route add default via 172.30.106.241
 
 # Pentru Reteaua 6
-root@Paris:~# ip route add default via 172.30.106.246
+root@Paris:~# ip route add default via 172.30.106.245
 ```
 
 
@@ -465,6 +500,16 @@ Reminder:
 - Adresa IP retea R6: 172.30.106.245/30
 
 
+```sh
+export $IP_NETWORK_R1="10.179.7.0/26"
+export $IP_NETWORK_R2="10.179.7.64/26"
+export $IP_NETWORK_R3="10.179.7.128/26"
+export $IP_NETWORK_R4="10.179.7.192/26" 
+export $IP_NETWORK_R5="172.30.106.240/30"
+export $IP_NETWORK_R6="172.30.106.245/30"
+```
+
+
 Reminder:
 | Nume interfata  | Retea | IP                |
 | :---            | :---  | :---              |
@@ -479,45 +524,94 @@ Reminder:
 | Roma/to-host    | R5    | 172.30.106.242/30 |
 
 
-
 ```sh
-root@Roma:~# ip route add 10.179.7.128/26 via 10.179.7.66       # R3 prin Milano
-root@Roma:~# ip route add 10.179.7.192/26 via 10.179.7.66       # R4 prin Milano
+export IP_R1_Roma_sw04="10.179.7.1/26"
+export IP_R2_Roma_sw05="10.179.7.65/26"
 
-root@Roma:~# ip route add 172.30.106.244/30 via 172.30.106.241
-```
+export IP_R2_Milano_to_rome="10.179.7.66"
+export IP_R3_Milano_eth_leo="10.179.7.129"
 
-```sh
-root@Milano:~# ip route add 10.179.7.0/26 via 10.179.7.65      # R1 prin Roma
-root@Milano:~# ip route add 10.179.7.192/26 via 10.179.7.129   # R4 prin Paris
-root@Milano:~# ip route add 172.30.106.240/30 via 10.179.7.65  # R5 prin Roma
+export IP_R4_Paris_eth_croiss="10.179.7.193/26"
 
-root@Milano:~# ip route add 172.30.106.244/30 via 10.179.7.65  # R6 prin Roma
-```
+export IP_R5_Host_to_rome="172.30.106.241"
+export IP_R5_Roma_to_host="172.30.106.242"
 
-```sh
-root@Paris:~# ip route add 10.179.7.0/26 via 10.179.7.193        # R1 prin Milano
-root@Paris:~# ip route add 10.179.7.64/26 via 10.179.7.193       # R2 prin Milano
-root@Paris:~# ip route add 10.179.7.128/26 via 10.179.7.193      # R3 prin Milano
-root@Paris:~# ip route add 172.30.106.240/30 via 172.30.106.246  # R5 prin host
-
-root@Paris:~# ip route add 172.30.106.244/30 via 172.30.106.246  # R6 prin host
-
+export IP_R6_Host_or_paris="172.30.106.245"
+export IP_R6_Paris_to_host="172.30.106.246"
 ```
 
 
+
 ```sh
-root@Host:~# ip route add 10.179.7.0/26 via 172.30.106.242    # R1 prin Roma
-root@Host:~# ip route add 10.179.7.64/26 via 172.30.106.242   # R2 prin Roma
-root@Host:~# ip route add 10.179.7.128/26 via 172.30.106.242  # R3 prin Roma
-root@Host:~# ip route add 10.179.7.192/26 via 172.30.106.246  # R4 prin Paris
+root@host:~# ip route add $IP_NETWORK_R6 via $IP_R5_Host_to_rome
+root@host:~# ip route add $IP_NETWORK_R5 via $IP_R6_Host_or_paris
+```
+
+```sh
+root@Roma:~# ip route add $IP_NETWORK_R5 via $IP_R1_Roma_sw04
+root@Roma:~# ip route add $IP_NETWORK_R5 via $IP_R1_Roma_sw05
+```
+
+```sh
+root@Milano:~# ip route add $IP_NETWORK_R2 via $IP_R3_Milano_eth_leo
+```
+
+```sh
+root@Paris:~# ip route add $IP_NETWORK_R6 via $IP_R6_Paris_to_host
+```
+
+
+
+Adica:
+
+
+
+```sh
+root@host:~# ip route add 172.30.106.244/30 via 172.30.106.241
+root@host:~# ip route add 172.30.106.240/30 via 172.30.106.245
+```
+
+```sh
+root@Roma:~# ip route add 172.30.106.240/30 via 10.179.7.1
+root@Roma:~# ip route add 172.30.106.240/30 via 10.179.7.65
+```
+
+```sh
+root@Milano:~# ip route add 10.179.7.64/26 via 10.179.7.129
 ```
 
 
 ```sh
+root@Paris:~# ip route add 172.30.106.245/30 via 10.179.7.193
+```
+
+
+```sh
+# Setarea de IP Forward
 $ sudo sysctl -w net.ipv4.ip_forward=1
 $ nano -l  /etc/sysctl.conf # Linia 28
 ```
+
+```sh
+# Verificare
+$ sysctl net.ipv4.ip_forward
+```
+
+
+
+
+### Task 2 | Subnetare IPv6
+
+
+Configurați adrese IPv6 pentru rețeaua VLAN4 și VLAN5 (notă: variabila $VLANID va avea valoarea 4, respectiv 5, cu zero-uri în față până la completarea segmentului de 16 biți):
+Folosiți spațiul 2024:baba:$B:$A:$VLANID::/96.
+Aceeași ordine de asignare ca la IPv4.
+Configurați conectivitate IPv6 între Roma și host:
+Folosiți spațiul fdee:dada:$C:$D::/64.
+Prima adresă asignabilă este pentru host, a doua a lui Roma.
+Configurați rutarea IPv6 pentru a permite comunicarea între toate sistemele cu adresă IPv6.
+Atenție: echipamentele Leonardo, Paris și Croissant NU vor avea adresă IPv6!
+
 
 
 ### Task 3 | Accessing Hosts
@@ -608,7 +702,7 @@ iface eth0
 ```
 
 
-## Task 3 | Accessing Hosts | **Remus** (end-device)
+#### Task 3 | Accessing Hosts | **Remus** (end-device)
 
 ```sh
 root@Remus:~# nano -l /etc/hosts.orig 

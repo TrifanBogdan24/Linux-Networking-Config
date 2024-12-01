@@ -1,0 +1,15 @@
+# Tema 2 RL - Interface configuration (on ifupdown-ng)
+# RTFM: https://github.com/ifupdown-ng/ifupdown-ng/blob/main/doc/interfaces.scd
+
+# Example entry:
+#auto eth0
+#iface eth0
+#	address 203.0.113.2/24
+#	gateway 203.0.113.1
+
+auto eth0
+iface eth0
+	address 10.179.7.2/26
+	gateway 10.179.7.1
+	# Alias-uri pentru IP-uri
+	up cat /etc/hosts.orig > /etc/hosts	

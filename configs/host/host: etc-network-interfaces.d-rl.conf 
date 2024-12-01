@@ -1,0 +1,8 @@
+auto eth0
+iface eth0
+	# Alias-uri pentru IP-uri
+	up cat /etc/hosts.orig > /etc/hosts
+	# IPv4 (Host/to-rome)                 
+	up ip addr add 172.30.106.241/30 dev to-rome        
+	# IPv4 (Host/or-paris)
+	up ip addr add 172.30.106.245/30 dev or-paris
