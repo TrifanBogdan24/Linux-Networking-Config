@@ -39,4 +39,4 @@ root@host:~# ip addr add <IP_HOST> dev <interface>
 
 
 # Configuring a static IP route
-ip route <dest-ip-addr>/<mask-length> <next-hop-ip-addr>
+ip route add <dest-ip-addr>/<mask-length> via <next-hop-ip-addr>

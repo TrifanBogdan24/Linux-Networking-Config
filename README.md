@@ -7,14 +7,14 @@
   - [Conectarre prin SSH](#conectarre-prin-ssh)
   - [Asignment](#asignment)
   - [Conectarea prin echipamente](#conectarea-prin-echipamente)
-  - [Task1](#task1)
+  - [Task 1](#task-1)
     - [Task 1.1 | Subnetare FIXA](#task-11--subnetare-fixa)
     - [Task 1.2 | Subnetarea VARIABILA (VLSM)](#task-12--subnetarea-variabila-vlsm)
     - [Task 1.3 | Rutare](#task-13--rutare)
     - [Task 1.3 | Rutare | Default Gateways](#task-13--rutare--default-gateways)
     - [Task 1.3 | Rutare | Rute Statice](#task-13--rutare--rute-statice)
     - [Task 1.3 | Persistenta la restart](#task-13--persistenta-la-restart)
-  - [Task 2 | Subnetare IPv6](#task-2--subnetare-ipv6)
+  - [Task 2 | Adresare IPv6](#task-2--adresare-ipv6)
   - [Task 3 | Accessing Hosts](#task-3--accessing-hosts)
     - [Task 3 | Accessing Hosts | **host** (router)](#task-3--accessing-hosts--host-router)
     - [Task 3 | Accessing Hosts | **Remus** (end-device)](#task-3--accessing-hosts--remus-end-device)
@@ -202,7 +202,7 @@ root@host: go Roma
 
 
 
-## Task1
+## Task 1
 
 
 ### Task 1.1 | Subnetare FIXA
@@ -568,13 +568,18 @@ root@Roma:~# ip route add 10.179.7.128/26 via 10.179.7.66
 
 
 Pentru fiecare router (inclusiv host),
-decomenteaza linia care contine `net.ipv4.ip_forward=1` (linia **28**) din fisierul `/etc/sysctl.conf`.
+decomenteaza linia care contine `net.ipv4.ip_forward=1` (linia **28** ar trebui sa fie) din fisierul `/etc/sysctl.conf`.
+
+
+Pe router **Roma**, decomenteaza linia care contine `net.ipv6.conf.all.forwarding=1` (linia **33**) din fisierul `etc/sysctl.conf`.
 
 In rest, uita-te la fisierele din directorul [configs/](configs/).
 
 
 
-## Task 2 | Subnetare IPv6
+
+
+## Task 2 | Adresare IPv6
 
 
 Configurați adrese IPv6 pentru rețeaua VLAN4 și VLAN5 (notă: variabila $VLANID va avea valoarea 4, respectiv 5, cu zero-uri în față până la completarea segmentului de 16 biți):
@@ -587,25 +592,50 @@ Configurați rutarea IPv6 pentru a permite comunicarea între toate sistemele cu
 Atenție: echipamentele Leonardo, Paris și Croissant NU vor avea adresă IPv6!
 
 
+```sh
+export IPv6_Roma_sw0.4="2024:baba:07:179:004::1/96"
+export IPv6_Romulus="2024:baba:07:179:004::2/96"
 
+export IPv6_Roma_sw0.5="2024:baba:07:179:005::1/96"
+export IPv6_Remus="2024:baba:07:179:005::2/96"
+export IPv6_Leonardo="2024:baba:07:179:005::3/96"
+
+export IPv6_Host_to_rome="fdee:dada:106:171::1/64"
+export IPv6_Roma_to_host="fdee:dada:106:171::2/64"
+```
 
 ```sh
 # VLAN 4
-root@roma:~# ip -6 addr add 2024:baba:07:179:004::1/96 dev sw0.4
-root@romulus:~# ip -6 addr add 2024:baba:07:179:004::2/96 dev eth0
+root@Roma:~# ip -6 addr add 2024:baba:07:179:004::1/96 dev sw0.4
+root@Romulus:~# ip -6 addr add 2024:baba:07:179:004::2/96 dev eth0
 
 
 # VLAN 5
-root@roma:~# ip -6 addr add 2024:baba:07:179:005::1/96 dev sw0.5
-root@milano:~# ip -6 addr add 2024:baba:07:179:005::2/96 dev to-rome
-root@remus:~# ip -6 addr add 2024:baba:07:179:005::3/96 dev eth0
+root@Roma:~# ip -6 addr add 2024:baba:07:179:005::1/96 dev sw0.5
+root@Milano:~# ip -6 addr add 2024:baba:07:179:005::2/96 dev to-rome
+root@Remus:~# ip -6 addr add 2024:baba:07:179:005::3/96 dev eth0
 
 
 # Host-Roma
 root@host:~# ip -6 addr add fdee:dada:106:171::1/64 dev to-rome
-root@roma:~# ip -6 addr add fdee:dada:106:171::2/64 dev to-host
+root@Roma:~# ip -6 addr add fdee:dada:106:171::2/64 dev to-host
 ```
 
+
+```sh
+# incercare (nu merge rutarea IPV6)
+
+
+root@Romulus:~# ip -6 route add default via 2024:baba:07:179:004::1
+
+root@Milano:~# ip -6 route add default via 2024:baba:07:179:005::1
+root@Remus:~# ip -6 route add default via 2024:baba:07:179:005::1
+
+root@Roma:# ip -6 route add default via fdee:dada:106:171::1
+
+
+# TODO: stiing ca Roma este switch-ul intermediat intre retelele VLAN 4, VLAN 5 si Host-Roma, adauga comenzi de "ip route add" static pentru a avea conectivitate intre toate sistemele setate cu adresa IPV6
+```
 
 
 ## Task 3 | Accessing Hosts
