@@ -597,8 +597,8 @@ export IPv6_Roma_sw0.4="2024:baba:07:179:004::1/96"
 export IPv6_Romulus="2024:baba:07:179:004::2/96"
 
 export IPv6_Roma_sw0.5="2024:baba:07:179:005::1/96"
-export IPv6_Remus="2024:baba:07:179:005::2/96"
-export IPv6_Leonardo="2024:baba:07:179:005::3/96"
+export IPv6_Milano="2024:baba:07:179:005::2/96"
+export IPv6_Remus="2024:baba:07:179:005::3/96"
 
 export IPv6_Host_to_rome="fdee:dada:106:171::1/64"
 export IPv6_Roma_to_host="fdee:dada:106:171::2/64"
@@ -631,10 +631,11 @@ root@Romulus:~# ip -6 route add default via 2024:baba:07:179:004::1
 root@Milano:~# ip -6 route add default via 2024:baba:07:179:005::1
 root@Remus:~# ip -6 route add default via 2024:baba:07:179:005::1
 
-root@Roma:# ip -6 route add default via fdee:dada:106:171::1
+root@host:~# ip -6 route add default via fdee:dada:106:171::2
 
 
 # TODO: stiing ca Roma este switch-ul intermediat intre retelele VLAN 4, VLAN 5 si Host-Roma, adauga comenzi de "ip route add" static pentru a avea conectivitate intre toate sistemele setate cu adresa IPV6
+
 ```
 
 

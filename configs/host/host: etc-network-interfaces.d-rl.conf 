@@ -18,6 +18,13 @@ iface eth0 inet static
 	up ip route add 10.179.7.64/26 via 172.30.106.242
 	up ip route add 10.179.7.128/26 via 172.30.106.242
 
-
+auto to-rome
+iface to-rome inet static
+	address 172.30.106.241/30
 iface to-rome inet6 static
 	address fdee:dada:106:171::1/64
+	gateway fdee:dada:106:171::2
+
+auto to-paris
+iface to-paris inet static
+	address 172.30.106.245/30

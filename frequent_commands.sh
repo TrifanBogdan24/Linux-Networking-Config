@@ -3,13 +3,16 @@
 # Frequently runned command during solving this assingment
 
 
+t2start bogdan.trifan2412
+
+
 # Connecting to VM
-ssh -J bogdan.trifan2412@fep.grid.pub.ro student@10.9.0.232
+ssh -J bogdan.trifan2412@fep.grid.pub.ro student@10.9.2.115
 # or
-ssh_open_stack 10.9.0.232
+ssh_open_stack 10.9.2.115
 
 # Coping the remote archive on local
-scp_open_stack_file 10.9.0.232 /home/student/tema2-exported.zip
+scp_open_stack_file 10.9.2.115 /home/student/tema2-exported.zip
 
 
 t2check --save
@@ -31,6 +34,9 @@ ip -6 addr show dev <interface>
 
 ip route show
 ip route show default
+
+ip -6 route show
+ip -6 route show default
 
 
 # How to place an IP of Host

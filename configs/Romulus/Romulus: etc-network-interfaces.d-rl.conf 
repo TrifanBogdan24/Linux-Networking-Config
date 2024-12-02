@@ -17,3 +17,4 @@ iface eth0 inet static
 
 iface eth0 inet6 static
 	address 2024:baba:07:179:004::2/96
+	gateway 2024:baba:07:179:004::1

@@ -12,7 +12,7 @@ iface to-rome inet static
 
 iface to-rome inet6 static
 	address 2024:baba:07:179:005::2/96
-
+	gateway 2024:baba:07:179:005::1
 
 
 auto eth-leo
