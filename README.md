@@ -23,8 +23,10 @@
     - [Task 3 | Accesing Hosts | **Roma** (router)](#task-3--accesing-hosts--roma-router)
     - [Task 3 | Accesing Hosts | **Milano** (router)](#task-3--accesing-hosts--milano-router)
     - [Task 3 | Accesing Hosts | **Paris** (router)](#task-3--accesing-hosts--paris-router)
+    - [Task 4 | Internet connectivity (**iptbables**)](#task-4--internet-connectivity-iptbables)
     - [Task 7 | SSH Keys](#task-7--ssh-keys)
-      - [Task 7 | SSH Keys | Host -\> ...](#task-7--ssh-keys--host---)
+      - [Task 7 | SSH Keys | From **Host** to others (Romulus, Remus, Leonardo)](#task-7--ssh-keys--from-host-to-others-romulus-remus-leonardo)
+      - [Task 7 | SSH Keys | From **Romulus** to others (Host, Remus, Leonardo)](#task-7--ssh-keys--from-romulus-to-others-host-remus-leonardo)
 
 ```
 t2start bogdan.trifan2412
@@ -978,13 +980,32 @@ root@Paris:~#
 ```
 
 
+### Task 4 | Internet connectivity (**iptbables**)
+
+
+```sh
+root@host:/home/student# iptables -A FORWARD -i eth0 -o to-rome -m state --state RELATED,ESTABLISHED -j ACCEPT
+root@host:/home/student# iptables -A FORWARD -i eth0 -o or-paris -m state --state RELATED,ESTABLISHED -j ACCEPT
+root@host:/home/student# iptables -A FORWARD -i to-rome -o eth0 -j ACCEPT
+root@host:/home/student# iptables -A FORWARD -i or-paris -o eth0 -j ACCEPT
+root@host:/home/student# iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
+```
+
+
+```sh
+# In order to make them persistent
+root@host:/home/student# iptables-save
+root@host:/home/student# iptables-save > /etc/iptables/rules.v4
+```
+
+
 ### Task 7 | SSH Keys
 
 
 > In caz sa trebuie sa refaci de la 0 generarea cheilor SSH, uita-te in directorul `/configs/` dupa perechile de chei SSH, da paste la ele si doar `ssh-add`.
 
 
-#### Task 7 | SSH Keys | Host -> ...
+#### Task 7 | SSH Keys | From **Host** to others (Romulus, Remus, Leonardo)
 
 ```sh
 # Generating SSH key-pairs for other devices, for HOST to connect to
@@ -995,7 +1016,59 @@ student@host:~$ ssh-keygen -t ed25519 -f /home/student/.ssh/ssh-key-leo -N ""
 
 
 ```sh
-student@host:~$ 
+student@host:~$ ssh student@Romulus "mkdir -p ~/.ssh && cat >> ~/.ssh/authorized_keys" < /home/student/.ssh/ssh-key-romu.pub
+student@host:~$ ssh student@Remus "mkdir -p ~/.ssh && cat >> ~/.ssh/authorized_keys" < /home/student/.ssh/ssh-key-remu.pub
+student@host:~$ ssh student@Leonardo "mkdir -p ~/.ssh && cat >> ~/.ssh/authorized_keys" < /home/student/.ssh/ssh-key-leo.pub
 ```
 
 
+```sh
+student@host:~$ cat /home/student/.ssh/config 
+Host romu
+	User student
+	HostName Romulus
+	IdentityFile /home/student/.ssh/ssh-key-romu
+
+Host remu
+	User student
+	HostName Remus
+	IdentityFile /home/student/.ssh/ssh-key-remu
+
+Host leo
+	User student
+	HostName Leonardo
+```
+
+```sh
+student@host:~$ ssh romu
+student@host:~$ ssh remu
+student@host:~$ ssh leo
+```
+
+
+
+#### Task 7 | SSH Keys | From **Romulus** to others (Host, Remus, Leonardo)
+
+> This doesn't work
+
+```sh
+# Generating SSH key-pairs for other devices, for HOST to connect to
+student@Romulus:~$ ssh-keygen -t ed25519 -f /home/student/.ssh/ssh-key-host -N ""
+student@Romulus:~$ ssh-keygen -t ed25519 -f /home/student/.ssh/ssh-key-remu -N ""
+student@Romulus:~$ ssh-keygen -t ed25519 -f /home/student/.ssh/ssh-key-leo -N ""
+```
+
+
+```sh
+student@Romulus:~$ ssh student@host "mkdir -p ~/.ssh && cat >> ~/.ssh/authorized_keys" < /home/student/.ssh/ssh-key-host.pub
+student@Romulus:~$ ssh student@Remus "mkdir -p ~/.ssh && cat >> ~/.ssh/authorized_keys" < /home/student/.ssh/ssh-key-remu.pub
+student@Romulus:~$ ssh student@Leonardo "mkdir -p ~/.ssh && cat >> ~/.ssh/authorized_keys" < /home/student/.ssh/ssh-key-leo.pub
+```
+
+
+
+```sh
+student@Romulus:~$ ssh student@host
+student@Romulus:~$ ssh student@Remus
+student@Romulus:~$ ssh student@Leonardo
+```

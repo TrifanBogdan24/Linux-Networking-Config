@@ -18,6 +18,7 @@ scp_open_stack_file 10.9.2.115 /home/student/tema2-exported.zip
 t2check --save
 
 
+# Alias-uri pentru IP-uri
 nano -l /etc/hosts.orig
 
 nano -l /etc/network/interfaces.d/rl.conf
@@ -46,3 +47,30 @@ root@host:~# ip addr add <IP_HOST> dev <interface>
 
 # Configuring a static IP route
 ip route add <dest-ip-addr>/<mask-length> via <next-hop-ip-addr>
+
+
+iptables-save
+iptables-save > /etc/iptables/rules.v4
+
+
+# For DNS
+cat /etc/resolv.conf
+
+# Resolve domain names
+resolvectl status
+
+
+# SSH Aliases
+cat ~/.ssh/config
+
+# Authorized PUBLIC SSH keys
+cat ~/.ssh/authorized_keys
+
+ssh-keygen -t ed25519 -f <path_of_key_pair> -N ""
+
+
+nano -l  /etc/ssh/sshd_config
+
+grep -H -n 'PubkeyAuthentication yes' /etc/ssh/sshd_config
+grep -H -n 'PasswordAuthentication yes' /etc/ssh/sshd_config
+grep -H -n 'AuthorizedKeysFile' /etc/ssh/sshd_config
