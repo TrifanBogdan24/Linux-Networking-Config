@@ -24,6 +24,7 @@
     - [Task 3 | Accesing Hosts | **Milano** (router)](#task-3--accesing-hosts--milano-router)
     - [Task 3 | Accesing Hosts | **Paris** (router)](#task-3--accesing-hosts--paris-router)
   - [Task 4 | Internet connectivity (**iptbables**)](#task-4--internet-connectivity-iptbables)
+  - [Task 5 | Network Address Translation (**NAT**)](#task-5--network-address-translation-nat)
   - [Task 7 | SSH Keys](#task-7--ssh-keys)
     - [Task 7 | SSH Keys | From **Host** to others (Romulus, Remus, Leonardo)](#task-7--ssh-keys--from-host-to-others-romulus-remus-leonardo)
     - [Task 7 | SSH Keys | From **Romulus** to others (Host, Remus, Leonardo)](#task-7--ssh-keys--from-romulus-to-others-host-remus-leonardo)
@@ -998,6 +999,52 @@ root@host:/home/student# iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
 # In order to make them persistent
 root@host:/home/student# iptables-save
 root@host:/home/student# iptables-save > /etc/iptables/rules.v4
+```
+
+
+## Task 5 | Network Address Translation (**NAT**)
+
+
+Configurați reguli de DNAT pe sistemele Roma și/sau host (după caz), astfel:
+- Conexiunile pe Roma la porturile (24000 + $E), (24000 + $F) și (24000 + $G) să conducă la conectarea ssh pe sistemele Romulus, Remus respectiv Leonardo.
+- Conectarea pe host la portul (9000 + $K) să conducă la conectarea pe tracker-ul de pe sistemul Milano.
+
+Sfat: aveți grijă cum testați: DNAT-ul va funcționa DOAR dacă veniți dintr-o rețea externă ruterului (e.g., host sau Paris vs Roma)!
+
+
+
+```
+E = 158
+F = 73
+G = 13
+```
+
+
+```sh
+root@Roma:~# iptables -t nat -A POSTROUTING -o sw0.4 -j MASQUERADE
+
+
+# Romulus (port 24158)
+root@Roma:~# iptables -t nat -A PREROUTING -p tcp --dport 24158 -j DNAT --to-destination 10.179.7.2:22
+
+# Remus (port 24073)
+root@Roma:~# iptables -t nat -A PREROUTING -p tcp --dport 24073 -j DNAT --to-destination 10.179.7.67:22
+
+# Leonardo (port 24013)
+root@Roma:~# iptables -t nat -A PREROUTING -p tcp --dport 24013 -j DNAT --to-destination 10.179.7.130:22
+
+root@Roma:~# iptables -A INPUT -p tcp --dport 24158 -j ACCEPT
+root@Roma:~# iptables -A INPUT -p tcp --dport 24073 -j ACCEPT
+root@Roma:~# iptables -A INPUT -p tcp --dport 24013 -j ACCEPT
+
+# Persistenta configuratiei
+root@Roma:~# iptables-save
+root@Roma:~# iptables-save > /etc/iptables/rules.v4
+```
+
+
+```
+H = 27
 ```
 
 
