@@ -74,3 +74,7 @@ nano -l  /etc/ssh/sshd_config
 grep -H -n 'PubkeyAuthentication yes' /etc/ssh/sshd_config
 grep -H -n 'PasswordAuthentication yes' /etc/ssh/sshd_config
 grep -H -n 'AuthorizedKeysFile' /etc/ssh/sshd_config
+
+
+eval "$(ssh-agent -s)"
+ssh-add <private_key>

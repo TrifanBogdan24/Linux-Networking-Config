@@ -1,5 +1,4 @@
 auto eth0
-
 iface eth0 inet static
 	# Alias-uri pentru IP-uri
 	up cat /etc/hosts.orig > /etc/hosts

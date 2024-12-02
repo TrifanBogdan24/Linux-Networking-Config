@@ -27,6 +27,8 @@
     - [Task 7 | SSH Keys](#task-7--ssh-keys)
       - [Task 7 | SSH Keys | From **Host** to others (Romulus, Remus, Leonardo)](#task-7--ssh-keys--from-host-to-others-romulus-remus-leonardo)
       - [Task 7 | SSH Keys | From **Romulus** to others (Host, Remus, Leonardo)](#task-7--ssh-keys--from-romulus-to-others-host-remus-leonardo)
+      - [Task 7 | SSH Keys | From **Remus** to others (Host, Romulus, Leonardo)](#task-7--ssh-keys--from-remus-to-others-host-romulus-leonardo)
+      - [Task 7 | SSH Keys | From **Leonardo** to others (Host, Romulus, Remu)](#task-7--ssh-keys--from-leonardo-to-others-host-romulus-remu)
 
 ```
 t2start bogdan.trifan2412
@@ -1022,34 +1024,12 @@ student@host:~$ ssh student@Leonardo "mkdir -p ~/.ssh && cat >> ~/.ssh/authorize
 ```
 
 
-```sh
-student@host:~$ cat /home/student/.ssh/config 
-Host romu
-	User student
-	HostName Romulus
-	IdentityFile /home/student/.ssh/ssh-key-romu
-
-Host remu
-	User student
-	HostName Remus
-	IdentityFile /home/student/.ssh/ssh-key-remu
-
-Host leo
-	User student
-	HostName Leonardo
-```
-
-```sh
-student@host:~$ ssh romu
-student@host:~$ ssh remu
-student@host:~$ ssh leo
-```
+`
 
 
 
 #### Task 7 | SSH Keys | From **Romulus** to others (Host, Remus, Leonardo)
 
-> This doesn't work
 
 ```sh
 # Generating SSH key-pairs for other devices, for HOST to connect to
@@ -1059,16 +1039,59 @@ student@Romulus:~$ ssh-keygen -t ed25519 -f /home/student/.ssh/ssh-key-leo -N ""
 ```
 
 
+> Copiaza manual `student@Remus:~$ /home/student/.ssh/ssh-key-host.pub`
+> la `student@host:~$ ~/.ssh/authorized_keys`
+
 ```sh
-student@Romulus:~$ ssh student@host "mkdir -p ~/.ssh && cat >> ~/.ssh/authorized_keys" < /home/student/.ssh/ssh-key-host.pub
 student@Romulus:~$ ssh student@Remus "mkdir -p ~/.ssh && cat >> ~/.ssh/authorized_keys" < /home/student/.ssh/ssh-key-remu.pub
 student@Romulus:~$ ssh student@Leonardo "mkdir -p ~/.ssh && cat >> ~/.ssh/authorized_keys" < /home/student/.ssh/ssh-key-leo.pub
 ```
 
 
 
+
+
+
+#### Task 7 | SSH Keys | From **Remus** to others (Host, Romulus, Leonardo)
+
+
 ```sh
-student@Romulus:~$ ssh student@host
-student@Romulus:~$ ssh student@Remus
-student@Romulus:~$ ssh student@Leonardo
+# Generating SSH key-pairs for other devices, for HOST to connect to
+student@Remus:~$ ssh-keygen -t ed25519 -f /home/student/.ssh/ssh-key-host -N ""
+student@Remus:~$ ssh-keygen -t ed25519 -f /home/student/.ssh/ssh-key-romu -N ""
+student@Remus:~$ ssh-keygen -t ed25519 -f /home/student/.ssh/ssh-key-leo -N ""
 ```
+
+> Copiaza manual `student@Remus:~$ /home/student/.ssh/ssh-key-host.pub`
+> la `student@host:~$ ~/.ssh/authorized_keys`
+
+```sh
+student@Remus:~$ ssh student@Romulus "mkdir -p ~/.ssh && cat >> ~/.ssh/authorized_keys" < /home/student/.ssh/ssh-key-romu.pub
+student@Remus:~$ ssh student@Leonardo "mkdir -p ~/.ssh && cat >> ~/.ssh/authorized_keys" < /home/student/.ssh/ssh-key-leo.pub
+```
+
+
+
+
+
+#### Task 7 | SSH Keys | From **Leonardo** to others (Host, Romulus, Remu)
+
+
+
+```sh
+# Generating SSH key-pairs for other devices, for HOST to connect to
+student@Leonardo:~$ ssh-keygen -t ed25519 -f /home/student/.ssh/ssh-key-host -N ""
+student@Leonardo:~$ ssh-keygen -t ed25519 -f /home/student/.ssh/ssh-key-romu -N ""
+student@Leonardo:~$ ssh-keygen -t ed25519 -f /home/student/.ssh/ssh-key-remu -N ""
+```
+
+
+> Copiaza manual `student@Leonardo:~$ /home/student/.ssh/ssh-key-host.pub`
+> la `student@host:~$ ~/.ssh/authorized_keys`
+
+```sh
+student@Leonardo:~$ ssh student@Romulus "mkdir -p ~/.ssh && cat >> ~/.ssh/authorized_keys" < /home/student/.ssh/ssh-key-romu.pub
+student@Leonardo:~$ ssh student@Remus "mkdir -p ~/.ssh && cat >> ~/.ssh/authorized_keys" < /home/student/.ssh/ssh-key-remu.pub
+```
+
+
