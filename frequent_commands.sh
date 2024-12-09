@@ -76,5 +76,73 @@ grep -H -n 'PasswordAuthentication yes' /etc/ssh/sshd_config
 grep -H -n 'AuthorizedKeysFile' /etc/ssh/sshd_config
 
 
-eval "$(ssh-agent -s)"
-ssh-add <private_key>
+netstat -tuln
+# -t displays TCP ports
+# -u displays UDP ports
+# -l displays only listening ports
+# -n displays addresses and port numbers numerically (instead of names)
+
+
+# Conectarea la port-ul unei statii
+netcat $IP_REMOTE $PORT_ON_REMOTE
+nc $IP $PORT
+
+# Conectarea la un port UDP
+nc -u $IP $PORT_UDP
+
+
+
+
+
+# NAT static (1-1) - rescrierea adresei sursa
+# Rescrierea sursei
+iptables -t nat -A POSTROUTING -s <ip_sursa>/<masca> -j SNAT --to-source <ip_destinatie>
+# Exemplu:
+iptables -t nat -A POSTROUTING -s 192.168.1.100/24 -j SNAT --to-source 141.85.200.1
+
+
+# NAT static (1-1) - Rescrierea adresei de destinatie
+# Rescrierea destinatiei
+iptables -t nat -A PREROUTING -d <ip_remote> -j DNAT --to-destination <ip_destinatie>
+# Exemplu:
+iptables -t nat -A PREROUTING -d 141.85.200.1 -j DNAT --to-destination 192.168.1.100
+
+
+# NAT dinamic (n-m) - Range de adrese IP
+# NAT dinamic cu un interval de adrese IP
+iptables -t nat -A POSTROUTING -s <ip_sursa>/<masca> -j SNAT --to-source <ip_start>-<ip_end>
+# Exemplu:
+iptables -t nat -A POSTROUTING -s 192.168.1.0/24 -j SNAT --to-source 141.85.200.2-141.85.200.6
+
+
+
+# Stergere regulilor existente
+iptables -t nat -F
+
+# Definirea regulilor NAT in ordine corecta
+iptables -t nat -A POSTROUTING -s <ip_sursa>/<masca> -j SNAT --to-source <ip_start>-<ip_end>
+iptables -t nat -A POSTROUTING -s <ip_sursa> -j SNAT --to-source <ip_destinatie>
+iptables -t nat -A PREROUTING -d <ip_remote> -j DNAT --to-destination <ip_destinatie>
+
+
+#  PAT (n-1) - Folosind MASQUERADE
+# NAT cu MASQUERADE pentru interfata de iesire
+iptables -t nat -A POSTROUTING -o <interfata>-j MASQUERADE
+# Exemplu:
+iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
+# NAT cu MASQUERADE pentru porturi specifice
+iptables -t nat -A POSTROUTING -o <interfata> -p <tcp/udp> -j MASQUERADE --to-ports <port_start>-<port_end>
+# Exemplu:
+iptables -t nat -A POSTROUTING -o eth0 -p <tcp/udp> -j MASQUERADE --to-ports 50000-55000
+
+
+
+# Port forwarding - Directionarea traficului pe porturi
+# Forwarding pentru porturi specifice
+iptables -t nat -A PREROUTING -i <interfata> -p <tcp/udp> --dport <port_sursa> -j DNAT --to-destination <ip_destinatie>:<port_destinatie>
+# Exemplu:
+iptables -t nat -A PREROUTING -i eth0 -p <tcp/udp> --dport 80 -j DNAT --to-destination 192.168.1.100:443
+# Modificarea sursei in raspunsul generat de server (daca exista 2 gateway-uri)
+iptables -t nat -A POSTROUTING -o <interfata> -p <tcp/udp> --dport <port_sursa> -d <ip_destinatie> -j SNAT --to-source <ip_gateway>
+# Exemplu:
+iptables -t nat -A POSTROUTING -o eth1 -p <tcp/udp> --dport 80 -d 192.168.1.100 -j SNAT --to-source 192.168.1.1

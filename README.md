@@ -25,6 +25,10 @@
     - [Task 3 | Accesing Hosts | **Paris** (router)](#task-3--accesing-hosts--paris-router)
   - [Task 4 | Internet connectivity (**iptbables**)](#task-4--internet-connectivity-iptbables)
   - [Task 5 | Network Address Translation (**NAT**)](#task-5--network-address-translation-nat)
+    - [Task 5 | NAT | DNAT pentru SSH](#task-5--nat--dnat-pentru-ssh)
+    - [Task 5 | NAT | DNAT pentru tracker-ul de pe Milano](#task-5--nat--dnat-pentru-tracker-ul-de-pe-milano)
+    - [Task 5 | NAT | DNAT pentru tracker-ul de pe Milano | Router-ul host](#task-5--nat--dnat-pentru-tracker-ul-de-pe-milano--router-ul-host)
+    - [Task 5 | NAT | DNAT pentru tracker-ul de pe Milano | Router-ul Roma](#task-5--nat--dnat-pentru-tracker-ul-de-pe-milano--router-ul-roma)
   - [Task 7 | SSH Keys](#task-7--ssh-keys)
     - [Task 7 | SSH Keys | From **Host** to others (Romulus, Remus, Leonardo)](#task-7--ssh-keys--from-host-to-others-romulus-remus-leonardo)
     - [Task 7 | SSH Keys | From **Romulus** to others (Host, Remus, Leonardo)](#task-7--ssh-keys--from-romulus-to-others-host-remus-leonardo)
@@ -1012,6 +1016,7 @@ Configurați reguli de DNAT pe sistemele Roma și/sau host (după caz), astfel:
 Sfat: aveți grijă cum testați: DNAT-ul va funcționa DOAR dacă veniți dintr-o rețea externă ruterului (e.g., host sau Paris vs Roma)!
 
 
+### Task 5 | NAT | DNAT pentru SSH
 
 ```
 E = 158
@@ -1043,8 +1048,94 @@ root@Roma:~# iptables-save > /etc/iptables/rules.v4
 ```
 
 
+
+### Task 5 | NAT | DNAT pentru tracker-ul de pe Milano
+
+
 ```
-H = 27
+K = 80
+```
+
+### Task 5 | NAT | DNAT pentru tracker-ul de pe Milano | Router-ul host
+
+
+```sh
+# Incercare 
+root@host~# iptables -t nat -A PREROUTING -i to-rome -p udp --dport 9080 -j DNAT --to-destination <IP_Roma/to-rome>:9080
+root@host~# iptables -t nat -A PREROUTING -i or-paris -p udp --dport 9080 -j DNAT --to-destination <IP_Roma/to-rome>:9080
+```
+
+
+```
+IP_Roma/to-rome = 172.30.106.242
+```
+
+
+Deci:
+```sh
+# Incercare 
+root@host:~# iptables -t nat -A PREROUTING -i to-rome -p tcp --dport 9080 -j DNAT --to-destination 172.30.106.242:9080
+root@host:~# iptables -t nat -A PREROUTING -i or-paris -p tcp --dport 9080 -j DNAT --to-destination 172.30.106.242:9080
+```
+
+
+
+### Task 5 | NAT | DNAT pentru tracker-ul de pe Milano | Router-ul Roma
+
+
+```sh
+# Incercare
+root@Roma:~# iptables -t nat -A PREROUTING -i to-host -p udp --dport <port_on_Rome>  -j DNAT --to-destination <IP_Milano/to-rome>:<port_on_Milano>
+root@Roma:~# iptables -t nat -A POSTROUTING -o sw0.5 -p udp --dport <port_on_Milano> -d <IP_Milano/to-rome> -j SNAT --to-source <IP_default_gateway_of_Roma>
+```
+
+```
+IP_Milano/to-rome = 10.179.7.66
+
+Rome's default gateway = host/to-rome = 172.30.106.241 
+```
+
+
+
+```sh
+root@Milano:~$ netstat -tuln
+Active Internet connections (only servers)
+Proto Recv-Q Send-Q Local Address           Foreign Address         State      
+tcp        0      0 0.0.0.0:22              0.0.0.0:*               LISTEN     
+tcp        0      0 0.0.0.0:23              0.0.0.0:*               LISTEN     
+tcp        0      0 0.0.0.0:25              0.0.0.0:*               LISTEN     
+tcp        0      0 0.0.0.0:53              0.0.0.0:*               LISTEN     
+tcp6       0      0 :::143                  :::*                    LISTEN     
+tcp6       0      0 :::22                   :::*                    LISTEN     
+tcp6       0      0 :::21                   :::*                    LISTEN     
+tcp6       0      0 :::25                   :::*                    LISTEN     
+tcp6       0      0 :::53                   :::*                    LISTEN     
+tcp6       0      0 :::993                  :::*                    LISTEN     
+udp        0      0 0.0.0.0:53              0.0.0.0:*                          
+udp        0      0 0.0.0.0:9123            0.0.0.0:*                          
+udp6       0      0 :::53                   :::*                               
+```
+
+Tracker-ul de pe Milan:
+- Port pe care primeste: 9123
+- Port pe care trimite: 9123
+
+Portul de interes (al tracker-ului) este port-ul **9123**, care este un port **UDP**.
+
+Pentru a ne conecta la portul **UDP** **9123**:
+
+```sh
+$ netcat -u Milano 9123
+```
+
+> Orice scriem la **stdin** trebuie sa primim exact la **stdout**.
+
+
+
+```sh
+# Incercare
+root@Roma:~# iptables -t nat -A PREROUTING -i to-host -p udp -m udp --dport 9080 -j DNAT --to-destination 10.179.7.66:9123
+root@Roma:~# iptables -t nat -A POSTROUTING -d 10.179.7.66/32 -o sw0.5 -p udp -m udp --dport 9123 -j SNAT --to-source 172.30.106.241
 ```
 
 
