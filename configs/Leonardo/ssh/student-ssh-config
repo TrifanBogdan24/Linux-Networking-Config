@@ -1,0 +1,12 @@
+Host host
+    HostName host
+    IdentityFile /home/student/.ssh/host
+
+
+Host Romulus
+    HostName Romulus
+    IdentityFile /home/student/.ssh/romu
+
+Host Remus
+    HostName Remus
+    IdentityFile /home/student/.ssh/remu

@@ -38,6 +38,7 @@
     - [Task 7 | SSH Keys | From **Romulus** to others (Host, Remus, Leonardo)](#task-7--ssh-keys--from-romulus-to-others-host-remus-leonardo)
     - [Task 7 | SSH Keys | From **Remus** to others (Host, Romulus, Leonardo)](#task-7--ssh-keys--from-remus-to-others-host-romulus-leonardo)
     - [Task 7 | SSH Keys | From **Leonardo** to others (Host, Romulus, Remu)](#task-7--ssh-keys--from-leonardo-to-others-host-romulus-remu)
+  - [Task 8 | Scanare pe Romulus a serverului mail (SMTP si IMAP) de pe Milano](#task-8--scanare-pe-romulus-a-serverului-mail-smtp-si-imap-de-pe-milano)
 
 ```
 t2start bogdan.trifan2412
@@ -1227,16 +1228,16 @@ root@Milano:~# iptables -A FORWARD -d Milano -j DROP
 
 ```sh
 # Generating SSH key-pairs for other devices, for HOST to connect to
-student@host:~$ ssh-keygen -t ed25519 -f /home/student/.ssh/ssh-key-romu -N ""
-student@host:~$ ssh-keygen -t ed25519 -f /home/student/.ssh/ssh-key-remu -N ""
-student@host:~$ ssh-keygen -t ed25519 -f /home/student/.ssh/ssh-key-leo -N ""
+student@host:~$ ssh-keygen -t ed25519 -f /home/student/.ssh/romu -N ""
+student@host:~$ ssh-keygen -t ed25519 -f /home/student/.ssh/remu -N ""
+student@host:~$ ssh-keygen -t ed25519 -f /home/student/.ssh/leo -N ""
 ```
 
 
 ```sh
-student@host:~$ ssh student@Romulus "mkdir -p ~/.ssh && cat >> ~/.ssh/authorized_keys" < /home/student/.ssh/ssh-key-romu.pub
-student@host:~$ ssh student@Remus "mkdir -p ~/.ssh && cat >> ~/.ssh/authorized_keys" < /home/student/.ssh/ssh-key-remu.pub
-student@host:~$ ssh student@Leonardo "mkdir -p ~/.ssh && cat >> ~/.ssh/authorized_keys" < /home/student/.ssh/ssh-key-leo.pub
+student@host:~$ ssh student@Romulus "mkdir -p ~/.ssh && cat >> ~/.ssh/authorized_keys" < /home/student/.ssh/romu.pub
+student@host:~$ ssh student@Remus "mkdir -p ~/.ssh && cat >> ~/.ssh/authorized_keys" < /home/student/.ssh/remu.pub
+student@host:~$ ssh student@Leonardo "mkdir -p ~/.ssh && cat >> ~/.ssh/authorized_keys" < /home/student/.ssh/leo.pub
 ```
 
 
@@ -1248,18 +1249,18 @@ student@host:~$ ssh student@Leonardo "mkdir -p ~/.ssh && cat >> ~/.ssh/authorize
 
 ```sh
 # Generating SSH key-pairs for other devices, for HOST to connect to
-student@Romulus:~$ ssh-keygen -t ed25519 -f /home/student/.ssh/ssh-key-host -N ""
-student@Romulus:~$ ssh-keygen -t ed25519 -f /home/student/.ssh/ssh-key-remu -N ""
-student@Romulus:~$ ssh-keygen -t ed25519 -f /home/student/.ssh/ssh-key-leo -N ""
+student@Romulus:~$ ssh-keygen -t ed25519 -f /home/student/.ssh/host -N ""
+student@Romulus:~$ ssh-keygen -t ed25519 -f /home/student/.ssh/remu -N ""
+student@Romulus:~$ ssh-keygen -t ed25519 -f /home/student/.ssh/leo -N ""
 ```
 
 
-> Copiaza manual `student@Remus:~$ /home/student/.ssh/ssh-key-host.pub`
+> Copiaza manual `student@Remus:~$ /home/student/.ssh/host.pub`
 > la `student@host:~$ ~/.ssh/authorized_keys`
 
 ```sh
-student@Romulus:~$ ssh student@Remus "mkdir -p ~/.ssh && cat >> ~/.ssh/authorized_keys" < /home/student/.ssh/ssh-key-remu.pub
-student@Romulus:~$ ssh student@Leonardo "mkdir -p ~/.ssh && cat >> ~/.ssh/authorized_keys" < /home/student/.ssh/ssh-key-leo.pub
+student@Romulus:~$ ssh student@Remus "mkdir -p ~/.ssh && cat >> ~/.ssh/authorized_keys" < /home/student/.ssh/remu.pub
+student@Romulus:~$ ssh student@Leonardo "mkdir -p ~/.ssh && cat >> ~/.ssh/authorized_keys" < /home/student/.ssh/leo.pub
 ```
 
 
@@ -1272,17 +1273,17 @@ student@Romulus:~$ ssh student@Leonardo "mkdir -p ~/.ssh && cat >> ~/.ssh/author
 
 ```sh
 # Generating SSH key-pairs for other devices, for HOST to connect to
-student@Remus:~$ ssh-keygen -t ed25519 -f /home/student/.ssh/ssh-key-host -N ""
-student@Remus:~$ ssh-keygen -t ed25519 -f /home/student/.ssh/ssh-key-romu -N ""
-student@Remus:~$ ssh-keygen -t ed25519 -f /home/student/.ssh/ssh-key-leo -N ""
+student@Remus:~$ ssh-keygen -t ed25519 -f /home/student/.ssh/host -N ""
+student@Remus:~$ ssh-keygen -t ed25519 -f /home/student/.ssh/romu -N ""
+student@Remus:~$ ssh-keygen -t ed25519 -f /home/student/.ssh/leo -N ""
 ```
 
-> Copiaza manual `student@Remus:~$ /home/student/.ssh/ssh-key-host.pub`
+> Copiaza manual `student@Remus:~$ /home/student/.ssh/host.pub`
 > la `student@host:~$ ~/.ssh/authorized_keys`
 
 ```sh
-student@Remus:~$ ssh student@Romulus "mkdir -p ~/.ssh && cat >> ~/.ssh/authorized_keys" < /home/student/.ssh/ssh-key-romu.pub
-student@Remus:~$ ssh student@Leonardo "mkdir -p ~/.ssh && cat >> ~/.ssh/authorized_keys" < /home/student/.ssh/ssh-key-leo.pub
+student@Remus:~$ ssh student@Romulus "mkdir -p ~/.ssh && cat >> ~/.ssh/authorized_keys" < /home/student/.ssh/romu.pub
+student@Remus:~$ ssh student@Leonardo "mkdir -p ~/.ssh && cat >> ~/.ssh/authorized_keys" < /home/student/.ssh/leo.pub
 ```
 
 
@@ -1295,18 +1296,37 @@ student@Remus:~$ ssh student@Leonardo "mkdir -p ~/.ssh && cat >> ~/.ssh/authoriz
 
 ```sh
 # Generating SSH key-pairs for other devices, for HOST to connect to
-student@Leonardo:~$ ssh-keygen -t ed25519 -f /home/student/.ssh/ssh-key-host -N ""
-student@Leonardo:~$ ssh-keygen -t ed25519 -f /home/student/.ssh/ssh-key-romu -N ""
-student@Leonardo:~$ ssh-keygen -t ed25519 -f /home/student/.ssh/ssh-key-remu -N ""
+student@Leonardo:~$ ssh-keygen -t ed25519 -f /home/student/.ssh/host -N ""
+student@Leonardo:~$ ssh-keygen -t ed25519 -f /home/student/.ssh/romu -N ""
+student@Leonardo:~$ ssh-keygen -t ed25519 -f /home/student/.ssh/remu -N ""
 ```
 
 
-> Copiaza manual `student@Leonardo:~$ /home/student/.ssh/ssh-key-host.pub`
+> Copiaza manual `student@Leonardo:~$ /home/student/.ssh/host.pub`
 > la `student@host:~$ ~/.ssh/authorized_keys`
 
 ```sh
-student@Leonardo:~$ ssh student@Romulus "mkdir -p ~/.ssh && cat >> ~/.ssh/authorized_keys" < /home/student/.ssh/ssh-key-romu.pub
-student@Leonardo:~$ ssh student@Remus "mkdir -p ~/.ssh && cat >> ~/.ssh/authorized_keys" < /home/student/.ssh/ssh-key-remu.pub
+student@Leonardo:~$ ssh student@Romulus "mkdir -p ~/.ssh && cat >> ~/.ssh/authorized_keys" < /home/student/.ssh/romu.pub
+student@Leonardo:~$ ssh student@Remus "mkdir -p ~/.ssh && cat >> ~/.ssh/authorized_keys" < /home/student/.ssh/remu.pub
 ```
 
 
+
+## Task 8 | Scanare pe Romulus a serverului mail (SMTP si IMAP) de pe Milano
+
+
+```sh
+# Foloseste parola: Pierdut$Cont1337
+student@Romulus:~$ ssh-keygen -t ed25519 -f /home/student/.ssh/milano -N ""
+student@Romulus:~$ ssh support@Milano "mkdir -p ~/.ssh && cat >> ~/.ssh/authorized_keys" < /home/student/.ssh/milano.pub
+```
+
+Also, adauga in **/home/student/.ssh/config**:
+```sh
+student@Romulus:~$ nano -l .ssh/config
+```
+```
+Host Milano
+	HostName Milano
+	IdentityFile /home/student/.ssh/milano
+```
