@@ -62,9 +62,12 @@ resolvectl status
 
 # SSH Aliases
 cat ~/.ssh/config
+nano -l ~/.ssh/config
 
 # Authorized PUBLIC SSH keys
 cat ~/.ssh/authorized_keys
+nano -l ~/.ssh/authorized_keys
+
 
 ssh-keygen -t ed25519 -f <path_of_key_pair> -N ""
 
@@ -81,6 +84,10 @@ netstat -tuln
 # -u displays UDP ports
 # -l displays only listening ports
 # -n displays addresses and port numbers numerically (instead of names)
+
+
+# Pentru mai multe detalii, "-p" spune si procesul care l-a creat
+netstat -tulpn
 
 
 # Conectarea la port-ul unei statii
@@ -140,9 +147,8 @@ iptables -t nat -A POSTROUTING -o eth0 -p <tcp/udp> -j MASQUERADE --to-ports 500
 # Port forwarding - Directionarea traficului pe porturi
 # Forwarding pentru porturi specifice
 iptables -t nat -A PREROUTING -i <interfata> -p <tcp/udp> --dport <port_sursa> -j DNAT --to-destination <ip_destinatie>:<port_destinatie>
-# Exemplu:
-iptables -t nat -A PREROUTING -i eth0 -p <tcp/udp> --dport 80 -j DNAT --to-destination 192.168.1.100:443
 # Modificarea sursei in raspunsul generat de server (daca exista 2 gateway-uri)
 iptables -t nat -A POSTROUTING -o <interfata> -p <tcp/udp> --dport <port_sursa> -d <ip_destinatie> -j SNAT --to-source <ip_gateway>
 # Exemplu:
+iptables -t nat -A PREROUTING -i eth0 -p <tcp/udp> --dport 80 -j DNAT --to-destination 192.168.1.100:443
 iptables -t nat -A POSTROUTING -o eth1 -p <tcp/udp> --dport 80 -d 192.168.1.100 -j SNAT --to-source 192.168.1.1

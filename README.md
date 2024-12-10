@@ -29,6 +29,9 @@
     - [Task 5 | NAT | DNAT pentru tracker-ul de pe Milano](#task-5--nat--dnat-pentru-tracker-ul-de-pe-milano)
     - [Task 5 | NAT | DNAT pentru tracker-ul de pe Milano | Router-ul host](#task-5--nat--dnat-pentru-tracker-ul-de-pe-milano--router-ul-host)
     - [Task 5 | NAT | DNAT pentru tracker-ul de pe Milano | Router-ul Roma](#task-5--nat--dnat-pentru-tracker-ul-de-pe-milano--router-ul-roma)
+  - [Task 6 | Filtare pachete (iptables)](#task-6--filtare-pachete-iptables)
+    - [Task 6 | Blocare initieare conexiuni SMTP si Telnet de pe Remus](#task-6--blocare-initieare-conexiuni-smtp-si-telnet-de-pe-remus)
+    - [Task 6 | Blocarea conexiunilor catre tracker-ul de pe Milano de la Croissant](#task-6--blocarea-conexiunilor-catre-tracker-ul-de-pe-milano-de-la-croissant)
   - [Task 7 | SSH Keys](#task-7--ssh-keys)
     - [Task 7 | SSH Keys | From **Host** to others (Romulus, Remus, Leonardo)](#task-7--ssh-keys--from-host-to-others-romulus-remus-leonardo)
     - [Task 7 | SSH Keys | From **Romulus** to others (Host, Remus, Leonardo)](#task-7--ssh-keys--from-romulus-to-others-host-remus-leonardo)
@@ -991,18 +994,18 @@ root@Paris:~#
 
 
 ```sh
-root@host:/home/student# iptables -A FORWARD -i eth0 -o to-rome -m state --state RELATED,ESTABLISHED -j ACCEPT
-root@host:/home/student# iptables -A FORWARD -i eth0 -o or-paris -m state --state RELATED,ESTABLISHED -j ACCEPT
-root@host:/home/student# iptables -A FORWARD -i to-rome -o eth0 -j ACCEPT
-root@host:/home/student# iptables -A FORWARD -i or-paris -o eth0 -j ACCEPT
-root@host:/home/student# iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
+root@host:~# iptables -A FORWARD -i eth0 -o to-rome -m state --state RELATED,ESTABLISHED -j ACCEPT
+root@host:~# iptables -A FORWARD -i eth0 -o or-paris -m state --state RELATED,ESTABLISHED -j ACCEPT
+root@host:~# iptables -A FORWARD -i to-rome -o eth0 -j ACCEPT
+root@host:~# iptables -A FORWARD -i or-paris -o eth0 -j ACCEPT
+root@host:~# iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
 ```
 
 
 ```sh
 # In order to make them persistent
-root@host:/home/student# iptables-save
-root@host:/home/student# iptables-save > /etc/iptables/rules.v4
+root@host:~# iptables-save
+root@host:~# iptables-save > /etc/iptables/rules.v4
 ```
 
 
@@ -1060,7 +1063,6 @@ K = 80
 
 
 ```sh
-# Incercare 
 root@host~# iptables -t nat -A PREROUTING -i to-rome -p udp --dport 9080 -j DNAT --to-destination <IP_Roma/to-rome>:9080
 root@host~# iptables -t nat -A PREROUTING -i or-paris -p udp --dport 9080 -j DNAT --to-destination <IP_Roma/to-rome>:9080
 ```
@@ -1073,9 +1075,9 @@ IP_Roma/to-rome = 172.30.106.242
 
 Deci:
 ```sh
-# Incercare 
-root@host:~# iptables -t nat -A PREROUTING -i to-rome -p tcp --dport 9080 -j DNAT --to-destination 172.30.106.242:9080
-root@host:~# iptables -t nat -A PREROUTING -i or-paris -p tcp --dport 9080 -j DNAT --to-destination 172.30.106.242:9080
+root@host:~# iptables -t nat -A PREROUTING -i to-rome -p udp --dport 9080 -j DNAT --to-destination 172.30.106.242:9080
+root@host:~# iptables -t nat -A PREROUTING -i or-paris -p udp --dport 9080 -j DNAT --to-destination 172.30.106.242:9080
+root@host:~# iptables-save > /etc/iptables/rules.v4
 ```
 
 
@@ -1084,9 +1086,9 @@ root@host:~# iptables -t nat -A PREROUTING -i or-paris -p tcp --dport 9080 -j DN
 
 
 ```sh
-# Incercare
 root@Roma:~# iptables -t nat -A PREROUTING -i to-host -p udp --dport <port_on_Rome>  -j DNAT --to-destination <IP_Milano/to-rome>:<port_on_Milano>
 root@Roma:~# iptables -t nat -A POSTROUTING -o sw0.5 -p udp --dport <port_on_Milano> -d <IP_Milano/to-rome> -j SNAT --to-source <IP_default_gateway_of_Roma>
+root@Roma:~# iptables-save > /etc/iptables/rules.v4
 ```
 
 ```
@@ -1116,6 +1118,29 @@ udp        0      0 0.0.0.0:9123            0.0.0.0:*
 udp6       0      0 :::53                   :::*                               
 ```
 
+
+Pentru mai multe detalii:
+```sh
+# Spune si procesul care l-a creat
+root@Milano:~# netstat -tulpn
+Active Internet connections (only servers)
+Proto Recv-Q Send-Q Local Address           Foreign Address         State       PID/Program name    
+tcp        0      0 0.0.0.0:25              0.0.0.0:*               LISTEN      872/master          
+tcp        0      0 0.0.0.0:23              0.0.0.0:*               LISTEN      245/inetd           
+tcp        0      0 0.0.0.0:22              0.0.0.0:*               LISTEN      255/sshd: /usr/sbin 
+tcp        0      0 0.0.0.0:53              0.0.0.0:*               LISTEN      264/dnsmasq         
+tcp6       0      0 :::143                  :::*                    LISTEN      87/couriertcpd      
+tcp6       0      0 :::25                   :::*                    LISTEN      872/master          
+tcp6       0      0 :::21                   :::*                    LISTEN      250/vsftpd          
+tcp6       0      0 :::22                   :::*                    LISTEN      255/sshd: /usr/sbin 
+tcp6       0      0 :::53                   :::*                    LISTEN      264/dnsmasq         
+tcp6       0      0 :::993                  :::*                    LISTEN      88/couriertcpd      
+udp        0      0 0.0.0.0:53              0.0.0.0:*                           264/dnsmasq         
+udp        0      0 0.0.0.0:9123            0.0.0.0:*                           1022/python3        
+udp6       0      0 :::53                   :::*                                264/dnsmasq         
+```
+
+
 Tracker-ul de pe Milan:
 - Port pe care primeste: 9123
 - Port pe care trimite: 9123
@@ -1123,7 +1148,6 @@ Tracker-ul de pe Milan:
 Portul de interes (al tracker-ului) este port-ul **9123**, care este un port **UDP**.
 
 Pentru a ne conecta la portul **UDP** **9123**:
-
 ```sh
 $ netcat -u Milano 9123
 ```
@@ -1133,10 +1157,48 @@ $ netcat -u Milano 9123
 
 
 ```sh
-# Incercare
 root@Roma:~# iptables -t nat -A PREROUTING -i to-host -p udp -m udp --dport 9080 -j DNAT --to-destination 10.179.7.66:9123
 root@Roma:~# iptables -t nat -A POSTROUTING -d 10.179.7.66/32 -o sw0.5 -p udp -m udp --dport 9123 -j SNAT --to-source 172.30.106.241
+root@Roma:~# iptables-save > /etc/iptables/rules.v4
 ```
+
+
+
+## Task 6 | Filtare pachete (iptables)
+
+
+Configurați filtrarea de pachete pe Roma / Paris / Milano (după caz) astfel încât:
+- conexiunile SMTP și Telnet inițiate de pe sistemul Remus în afara rețelei lui să fie blocate (inclusiv către alte rutere!);
+- conexiunile către tracker-ul ce rulează pe sistemul Milano să nu fie permise de la Croissant.
+- blocați TOATE conexiunile externe (i.e., de pe IP-urile din afara stației) către Leonardo, mai puțin protocoalele icmp și ssh.
+- atenție: NU blocați conexiunile inițiate de Leonardo și nici răspunsurile de la acestea! folosiți reguli stateful (i.e. connection tracking)!
+
+
+### Task 6 | Blocare initieare conexiuni SMTP si Telnet de pe Remus
+
+
+```sh
+# Blocare SMTP (port 25) de la Remus catre exterior
+root@Roma:~# iptables -A FORWARD -s Remus -p tcp --dport 25 -j DROP
+
+# Blocare Telnet (port 23) de la Remus catre exterior
+root@Roma:~# iptables -A FORWARD -s Remus -p tcp --dport 23 -j DROP
+root@Roma:~# iptables-save > /etc/iptables/rules.v4
+```
+
+
+
+### Task 6 | Blocarea conexiunilor catre tracker-ul de pe Milano de la Croissant
+
+
+> REMINDER: Tracker-ul de pe Milano se afla pe portul **9123**, care este port **UDP**.
+
+
+```sh
+root@Paris:~# iptables -A FORWARD -s Croissant -d Milano -p udp --dport 9123 -j DROP
+root@Paris:~# iptables-save > /etc/iptables/rules.v4
+```
+
 
 
 ## Task 7 | SSH Keys
@@ -1162,7 +1224,6 @@ student@host:~$ ssh student@Leonardo "mkdir -p ~/.ssh && cat >> ~/.ssh/authorize
 ```
 
 
-`
 
 
 
