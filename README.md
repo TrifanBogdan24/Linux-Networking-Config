@@ -30,8 +30,9 @@
     - [Task 5 | NAT | DNAT pentru tracker-ul de pe Milano | Router-ul host](#task-5--nat--dnat-pentru-tracker-ul-de-pe-milano--router-ul-host)
     - [Task 5 | NAT | DNAT pentru tracker-ul de pe Milano | Router-ul Roma](#task-5--nat--dnat-pentru-tracker-ul-de-pe-milano--router-ul-roma)
   - [Task 6 | Filtare pachete (iptables)](#task-6--filtare-pachete-iptables)
-    - [Task 6 | Blocare initieare conexiuni SMTP si Telnet de pe Remus](#task-6--blocare-initieare-conexiuni-smtp-si-telnet-de-pe-remus)
-    - [Task 6 | Blocarea conexiunilor catre tracker-ul de pe Milano de la Croissant](#task-6--blocarea-conexiunilor-catre-tracker-ul-de-pe-milano-de-la-croissant)
+    - [Task 6 | Blocare initieare conexiuni **SMTP** si **Telnet** de pe **Remus**](#task-6--blocare-initieare-conexiuni-smtp-si-telnet-de-pe-remus)
+    - [Task 6 | Blocarea conexiunilor catre tracker-ul de pe **Milano** de la **Croissant**](#task-6--blocarea-conexiunilor-catre-tracker-ul-de-pe-milano-de-la-croissant)
+    - [Task 6 | Blocarea conexiunilor catre **Leonardo**, in afara de **icmp** si **ssh**](#task-6--blocarea-conexiunilor-catre-leonardo-in-afara-de-icmp-si-ssh)
   - [Task 7 | SSH Keys](#task-7--ssh-keys)
     - [Task 7 | SSH Keys | From **Host** to others (Romulus, Remus, Leonardo)](#task-7--ssh-keys--from-host-to-others-romulus-remus-leonardo)
     - [Task 7 | SSH Keys | From **Romulus** to others (Host, Remus, Leonardo)](#task-7--ssh-keys--from-romulus-to-others-host-remus-leonardo)
@@ -1174,7 +1175,7 @@ Configurați filtrarea de pachete pe Roma / Paris / Milano (după caz) astfel î
 - atenție: NU blocați conexiunile inițiate de Leonardo și nici răspunsurile de la acestea! folosiți reguli stateful (i.e. connection tracking)!
 
 
-### Task 6 | Blocare initieare conexiuni SMTP si Telnet de pe Remus
+### Task 6 | Blocare initieare conexiuni **SMTP** si **Telnet** de pe **Remus**
 
 
 ```sh
@@ -1188,7 +1189,7 @@ root@Roma:~# iptables-save > /etc/iptables/rules.v4
 
 
 
-### Task 6 | Blocarea conexiunilor catre tracker-ul de pe Milano de la Croissant
+### Task 6 | Blocarea conexiunilor catre tracker-ul de pe **Milano** de la **Croissant**
 
 
 > REMINDER: Tracker-ul de pe Milano se afla pe portul **9123**, care este port **UDP**.
@@ -1197,6 +1198,21 @@ root@Roma:~# iptables-save > /etc/iptables/rules.v4
 ```sh
 root@Paris:~# iptables -A FORWARD -s Croissant -d Milano -p udp --dport 9123 -j DROP
 root@Paris:~# iptables-save > /etc/iptables/rules.v4
+```
+
+
+### Task 6 | Blocarea conexiunilor catre **Leonardo**, in afara de **icmp** si **ssh**
+
+
+```sh
+# A se rula comenzile in aceasta ordine (ordinea conteaza)
+root@Milano:~# iptables -P INPUT ACCEPT
+root@Milano:~# iptables -P FORWARD ACCEPT
+root@Milano:~# iptables -P OUTPUT ACCEPT
+root@Milano:~# iptables -A FORWARD -d Milano -p icmp -j ACCEPT
+root@Milano:~# iptables -A FORWARD -d Milano -p tcp -m tcp --dport 22 -j ACCEPT
+root@Milano:~# iptables -A FORWARD -d Milano -m state --state RELATED,ESTABLISHED -j ACCEPT
+root@Milano:~# iptables -A FORWARD -d Milano -j DROP
 ```
 
 
