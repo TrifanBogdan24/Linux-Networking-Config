@@ -38,7 +38,8 @@
     - [Task 7 | SSH Keys | From **Romulus** to others (Host, Remus, Leonardo)](#task-7--ssh-keys--from-romulus-to-others-host-remus-leonardo)
     - [Task 7 | SSH Keys | From **Remus** to others (Host, Romulus, Leonardo)](#task-7--ssh-keys--from-remus-to-others-host-romulus-leonardo)
     - [Task 7 | SSH Keys | From **Leonardo** to others (Host, Romulus, Remu)](#task-7--ssh-keys--from-leonardo-to-others-host-romulus-remu)
-  - [Task 8 | Scanare pe Romulus a serverului mail (SMTP si IMAP) de pe Milano](#task-8--scanare-pe-romulus-a-serverului-mail-smtp-si-imap-de-pe-milano)
+  - [Task 8 | Scanarea **pe Romulus** a **serverului mail** (SMTP si IMAP) **de pe Milano**](#task-8--scanarea-pe-romulus-a-serverului-mail-smtp-si-imap-de-pe-milano)
+  - [Task 9 | Sincronizarea automata de pe **Remus** pe **Roma**](#task-9--sincronizarea-automata-de-pe-remus-pe-roma)
 
 ```
 t2start bogdan.trifan2412
@@ -1312,21 +1313,102 @@ student@Leonardo:~$ ssh student@Remus "mkdir -p ~/.ssh && cat >> ~/.ssh/authoriz
 
 
 
-## Task 8 | Scanare pe Romulus a serverului mail (SMTP si IMAP) de pe Milano
+
+
+## Task 8 | Scanarea **pe Romulus** a **serverului mail** (SMTP si IMAP) **de pe Milano**
+
+
+Pe **Romulus**, am scris urmatorul script de **python**:
+
+> NOTA: Daca rulez checker-ul de doua ori consecutiv, imi spune *"Mailbox is broken"*.
+
+> Inainte de rula checker-ul, deconecteaza-te de pe VM si conecteaza-te din nou (prin **ssh**).
+
 
 
 ```sh
-# Foloseste parola: Pierdut$Cont1337
-student@Romulus:~$ ssh-keygen -t ed25519 -f /home/student/.ssh/milano -N ""
-student@Romulus:~$ ssh support@Milano "mkdir -p ~/.ssh && cat >> ~/.ssh/authorized_keys" < /home/student/.ssh/milano.pub
+student@Romulus:~$ touch scan-support-tickets
+student@Romulus:~$ chmod +x scan-support-tickets
+student@Romulus:~$ nano -l scan-support-tickets
 ```
 
-Also, adauga in **/home/student/.ssh/config**:
 ```sh
-student@Romulus:~$ nano -l .ssh/config
+#!/usr/bin/env python3
+
+import imaplib
+import smtplib
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+import email
+
+
+# IP Milano
+IMAP_SERVER = '10.179.7.66'
+SMTP_SERVER = '10.179.7.66'
+
+USERNAME = 'support'
+PASSWORD = 'Pierdut$Cont1337'
+
+ticket_counter = 1
+
+def fetch_support_tickets():
+  global ticket_counter
+  mail = imaplib.IMAP4_SSL(IMAP_SERVER)
+  mail.login(USERNAME, PASSWORD)
+  mail.select('inbox')
+
+  result, data = mail.search(None, '(SUBJECT "Support Ticket")')
+  email_ids = data[0].split()
+
+  for email_id in email_ids:
+      result, msg_data = mail.fetch(email_id, '(RFC822)')
+      raw_email = msg_data[0][1]
+
+      msg = email.message_from_bytes(raw_email)
+
+      sender_email = msg['From']
+      subject_text = msg['Subject']
+
+      if 'Support Ticket' in subject_text:
+          send_reply(sender_email, subject_text)
+          ticket_counter += 1
+
+  mail.logout()
+
+def send_reply(to_email, subject):
+  body = f"Hi,\n" \
+         f"\n" \
+         f"Your ticket named '{subject}' was registered as #{ticket_counter}.\n" \
+         f"\n" \
+         f"Thank you for your patience!\n"
+
+  
+  msg = MIMEMultipart()
+  msg['From'] = USERNAME
+  msg['To'] = to_email
+  msg['Subject'] = f'Re: {subject}'
+  msg.attach(MIMEText(body, 'plain'))
+
+  try:
+      with smtplib.SMTP(SMTP_SERVER, 25) as server:
+        server.send_message(msg)
+        return
+  except Exception as e:
+    return
+
+if __name__ == "__main__":
+  fetch_support_tickets()
+
 ```
-```
-Host Milano
-	HostName Milano
-	IdentityFile /home/student/.ssh/milano
+
+
+
+## Task 9 | Sincronizarea automata de pe **Remus** pe **Roma**
+---
+
+
+
+```sh
+student@host:~$ ssh-keygen -t ed25519 -f /home/student/.ssh/romu -N ""
+student@host:~$ ssh student@Romulus "mkdir -p ~/.ssh && cat >> ~/.ssh/authorized_keys" < /home/student/.ssh/romu.pub
 ```

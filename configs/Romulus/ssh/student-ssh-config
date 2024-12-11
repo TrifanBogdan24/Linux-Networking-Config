@@ -12,7 +12,3 @@ Host Leonardo
     HostName Leonardo
     IdentityFile /home/student/.ssh/leo
 
-
-Host Milano
-	HostName Milano
-	IdentityFile /home/student/.ssh/milano

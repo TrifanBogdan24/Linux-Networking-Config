@@ -152,3 +152,9 @@ iptables -t nat -A POSTROUTING -o <interfata> -p <tcp/udp> --dport <port_sursa> 
 # Exemplu:
 iptables -t nat -A PREROUTING -i eth0 -p <tcp/udp> --dport 80 -j DNAT --to-destination 192.168.1.100:443
 iptables -t nat -A POSTROUTING -o eth1 -p <tcp/udp> --dport 80 -d 192.168.1.100 -j SNAT --to-source 192.168.1.1
+
+
+
+# Trimitere de mail
+echo <mesaj> | mail -s <subiect> <dest_username>@<dest_IP/hostnmae>
+echo <mesaj> | mail -s <subiect> -r <src_username>@<src_IP/hostname> <dest_username>@<dest_IP/hostnmae>
