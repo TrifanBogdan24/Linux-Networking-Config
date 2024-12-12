@@ -1,0 +1,20 @@
+#!/bin/bash
+
+USER="remus-backup"
+IP="Roma"
+
+terminate() {
+    echo "Se opreste rularea script-ului!"
+    exit 0
+}
+
+trap terminate SIGINT SIGTERM
+
+while true; do
+    rsync -av --exclude='.*' --exclude='*VIRUS*' \
+        --chown=$USER:$USER --chmod=ug=rw,o=r \
+        /home/student/Documents/* $USER@$IP:/var/remus-backup \
+        > /dev/null 2>&1 &
+
+    sleep 1
+done

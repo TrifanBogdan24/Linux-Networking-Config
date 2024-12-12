@@ -1407,8 +1407,102 @@ if __name__ == "__main__":
 ---
 
 
+Ne uitam pe **Roma**:
 
 ```sh
-student@host:~$ ssh-keygen -t ed25519 -f /home/student/.ssh/romu -N ""
-student@host:~$ ssh student@Romulus "mkdir -p ~/.ssh && cat >> ~/.ssh/authorized_keys" < /home/student/.ssh/romu.pub
+student@Roma:~$ cat /etc/passwd
 ```
+
+Observ **user**-ul:
+```
+remus-backup:x:1001:1001::/var/remus-backup:/bin/bash
+```
+
+
+NU merge:
+```sh
+student@Roma:~$ su remus-backup
+```
+
+
+Dar merge:
+```sh
+student@Roma:~$ sudo su remus-backup
+remus-backup@Roma:/home/student$ 
+```
+
+Sau (merge si):
+```sh
+student@Roma:~$ sudo su
+root@Roma:student# su remus-backup
+remus-backup@Roma:/home/student$ 
+```
+
+
+Prin urmare, vreu sa ma conectez cu **user**-ul *remus-backup*, pe **host**-ul *Roma*.
+
+
+```sh
+student@Remus:~$ ssh-keygen -t ed25519 -f /home/student/.ssh/roma -N ""
+student@Remus:~$ ssh student@Roma "mkdir -p ~/.ssh && cat >> ~/.ssh/authorized_keys" < /home/remus-backup/.ssh/roma.pub
+```
+
+> Daca nu merge a doua comanda, copiaza manual
+> **cheia publica** (**roma.pub**) de pe **Romus**
+> la **/home/remus-backup/.ssh/authorized_keys** pe **Roma**.
+
+Adauga o noua intrare in fisierul de configuratie SSH a lui **Romus**:
+
+```sh
+remus-backup@Remus:~$ nano -l ~/.ssh/config 
+```
+
+
+```
+Host Roma
+	HostName Roma
+	IdentityFile /home/student/.ssh/roma
+```
+
+
+Acum ne putem conecta fara parola:
+
+```sh
+student@Remus:~$ ssh remus-backup@Roma
+```
+
+
+```sh
+student@Remus:~$ mkdir ~/scripts
+student@Remus:~$ touch ~/scripts/auto-backup
+student@Remus:~$ chmod +x ~/scripts/auto-backup
+```
+
+
+```sh
+student@Remus:~$ nano -l ~/scripts/auto-backup
+```
+
+```sh
+#!/bin/bash
+
+USER="remus-backup"
+IP="Roma"
+
+terminate() {
+    echo "Se opreste rularea script-ului!"
+    exit 0
+}
+
+trap terminate SIGINT SIGTERM
+
+while true; do
+    rsync -av --exclude='.*' --exclude='*VIRUS*' \
+        --chown=$USER:$USER --chmod=ug=rw,o=r \
+        /home/student/Documents/* $USER@$IP:/var/remus-backup \
+        > /dev/null 2>&1 &
+
+    sleep 1
+done
+```
+
