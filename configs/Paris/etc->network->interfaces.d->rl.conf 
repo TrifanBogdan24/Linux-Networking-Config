@@ -9,6 +9,9 @@ iface to-host
 	# Alias-uri pentru IP-uri
 	up cat /etc/hosts.orig > /etc/hosts
 
+	# Interfata virtuala pentru WireGuard (VPN)
+	up wg-quick up wg-rl
+
 auto eth-croiss
 iface eth-croiss
 	#address <CIDR/prefix notation>

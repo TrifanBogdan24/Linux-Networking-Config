@@ -49,6 +49,13 @@ root@host:~# ip addr add <IP_HOST> dev <interface>
 ip route add <dest-ip-addr>/<mask-length> via <next-hop-ip-addr>
 
 
+# Imparte interfata in 2 sub-interfete (logice)  pentru VLAN 4 si VLAN 5
+up ip link add link sw0 name sw0.4 type vlan id 4
+up ip link add link sw0 name sw0.5 type vlan id 5
+up ip link set sw0.4 up
+up ip link set sw0.5 up
+
+
 iptables-save
 iptables-save > /etc/iptables/rules.v4
 
