@@ -40,6 +40,7 @@
     - [Task 7 | SSH Keys | From **Leonardo** to others (Host, Romulus, Remu)](#task-7--ssh-keys--from-leonardo-to-others-host-romulus-remu)
   - [Task 8 | Scanarea **pe Romulus** a **serverului mail** (SMTP si IMAP) **de pe Milano**](#task-8--scanarea-pe-romulus-a-serverului-mail-smtp-si-imap-de-pe-milano)
   - [Task 9 | Sincronizarea automata de pe **Remus** pe **Roma**](#task-9--sincronizarea-automata-de-pe-remus-pe-roma)
+  - [Task 10 | **Wireguard tunnel**](#task-10--wireguard-tunnel)
 
 ```
 t2start bogdan.trifan2412
@@ -1505,4 +1506,282 @@ while true; do
     sleep 1
 done
 ```
+
+
+
+
+## Task 10 | **Wireguard tunnel**
+---
+
+
+Dorim să conectăm rețelele Milano-Leonardo și Paris-Croissant împreună printr-un tunel Wireguard:
+Pentru rețeaua din tunel, folosiți spațiul 10.$H.$J.96/30; prima adresă asignabilă este a lui Milano, iar ce-a de-a doua a lui Paris;
+Va trebui să puteți accesa adresele IP ale capetelor de tunel și de pe Leonardo și Croissant!
+Denumiți interfețele de tunel wg-rl la ambele capete.
+Tunelul wireguard trebuie să fie persistent! (folosiți hook-uri în interfaces).
+
+> Un link foarte bun de inspiratie (si exercitiu de practica)
+> este **Laboratorul 10 de ISC**:
+> <https://ocw.cs.pub.ro/courses/isc/labs/10>
+
+De aici, am aflat:
+
+```sh
+# Generare pereche chei publica-privata pentru WireGuard (va afisa cheia publica)
+wg genkey | tee wg-priv.key | wg pubkey | tee wg-pub.key
+# Q: what does `tee` do? (`man` it!)
+```
+
+Template fisier de configuratie interfata wireguard:
+
+```conf
+[Interface]
+PrivateKey = <paste-your-private-key>
+ListenPort = 55820
+
+[Peer]
+PublicKey = <paste-your-colleagues's-pub-key>
+Endpoint = <colleague-VM-IP>:55820
+AllowedIPs = <your-tunnel-subnet>/<mask>
+```
+
+
+> NOTA: **WireGuard** functioneaza by default pe portul `51820`.
+
+**WireGuard** se configureaza oarecum ca **SSH**: are nevoie de o pereche de chei publica-privata.
+
+
+```sh
+# Comanda nu va afisa nimic, va scri cheile direct in fisiere
+root@Milano:~# wg genkey | tee wg-privatekey | wg pubkey > wg-publickey
+```
+
+
+```sh
+root@Paris:~# wg genkey | tee wg-privatekey | wg pubkey > wg-publickey
+```
+
+
+Pentru rețeaua din tunel, folosiți spațiul 10.$H.$J.96/30; prima adresă asignabilă este a lui Milano, iar ce-a de-a doua a lui Paris;
+
+
+```
+IP retea tunnel = 10.$H.$J.96/30
+
+H=27
+J=214
+
+IP retea tunnel  = 10.27.214.96/30
+IP privat Milano = IP Milano/wg-rl = 10.27.214.97/30
+IP privat Paris  = IP Paris/wg-rl  = 10.27.214.98/30
+```
+
+
+
+Pe **Milano**:
+
+
+```sh
+root@Milano:~# nano -l /etc/wireguard/wg-rl.conf
+```
+
+```conf
+[Interface]
+Address = <IP-privat-Milano/wg-rl>
+SaveConfig = true
+ListenPort = 51820
+PrivateKey = <cheie-privata-Milano>
+
+# Paris/to-host
+[Peer]
+PublicKey = <cheie-publica-Paris>
+# AllowedIPs = <tunnel-subnet>/<mask>
+AllowedIPs = <IP-retea-tunel>
+# Endpoint = Paris/to-host
+Endpoint = <IP-Paris/to-host>:51820
+PersistentKeepalive = 60
+```
+
+Adica:
+
+
+```conf
+[Interface]
+Address = 10.27.214.97/30
+SaveConfig = true
+ListenPort = 51820
+PrivateKey = SKff+08t1TVayJj3Ob2lemtSG0G9fXqGCvyUPYDFCUc=
+
+# Paris/to-host
+[Peer]
+PublicKey = ki3M91uPAU/ooKr9dogvEq7R0vHS0gQNkx83MQp7Xyo=
+# AllowedIPs = <tunnel-subnet>/<mask>
+AllowedIPs = 10.27.214.96/30
+# Endpoint = Paris/to-host
+Endpoint = 172.30.106.246:51820
+PersistentKeepalive = 60
+```
+
+
+
+Pe **Paris**:
+
+
+```sh
+root@Paris:~# nano -l /etc/wireguard/wg-rl.conf
+```
+
+```conf
+[Interface]
+Address = <IP-privat-Paris/wg-rl>
+SaveConfig = true
+ListenPort = 51820
+PrivateKey = <cheie-privata-Paris>
+
+# Milano/wg-rl
+[Peer]
+PublicKey = <cheie-publica-Milano>
+# AllowedIPs = <tunnel-subnet>/<mask>
+AllowedIPs = <IP-retea-tunel>
+# Endpoint = Milano/to-rome
+Endpoint = <IP-Milano/to-rome>:51820
+PersistentKeepalive = 60
+```
+
+
+Adica:
+
+```conf
+[Interface]
+Address = 10.27.214.98/30
+SaveConfig = true
+ListenPort = 51820
+PrivateKey = cMxJNvd5rErTXyecAg4rlCmRKHohyaaz6KzYBF/qVG8=
+
+# Milano/wg-rl
+[Peer]
+PublicKey = 8Tsqi0T1DWijG7Zb0QfnWH7zcA7NnlUsGRuaUzqzR2Q=
+# AllowedIPs = <tunnel-subnet>/<mask>
+AllowedIPs = 10.27.214.96/30
+# Endpoint = Milano/to-rome
+Endpoint = 10.179.7.66:51820
+PersistentKeepalive = 60
+```
+
+
+Dupa am configurat cum ar trebui sa arate interfetele, ele trebuiesc pornite:
+
+
+```sh
+root@Milano:~# wg-quick up wg-rl
+```
+
+```sh
+root@Paris:~# wg-quick up wg-rl
+```
+
+
+> Foarte important!
+>
+> Pentru a modifica fisierul de configuratie al interfetei de **WireGuard**,
+> interfata trebuie mai intai orpita cu `wg-quick down wg-rl`
+> (altfel nu va salva nimica)
+> si repornita cu `wg-quick down wg-rl`.
+
+
+> NOTA:
+> Aparent, fisierele de configuratie nu salveaza comentariile :(.
+
+
+
+Comanda `wg-quick up wg-rl` nu este persistenta la restart,
+de aceea trebuie adaugata intr-un **hook** de **up** in *"interfata principala"* a router-ului:
+
+
+Pentru **Milano**:
+
+```sh
+root@Milano:~# nano -l /etc/network/interfaces.d/rl.conf
+```
+
+```
+auto to-rome
+
+iface to-rome inet static
+  ....
+	# Interfata virtuala pentru WireGuard (VPN)
+	up wg-quick up wg-rl
+....
+```
+
+
+La fel si pe **Paris**:
+
+```sh
+root@Paris:~# nano -l /etc/network/interfaces.d/rl.conf
+```
+
+
+```
+auto to-host
+iface to-host
+  ....
+	# Interfata virtuala pentru WireGuard (VPN)
+	up wg-quick up wg-rl
+....
+```
+
+
+
+In acest moment, tunelul functioneaza de la up capat la altul.
+Putem da **ping** de la o adresa privata la alta.
+Totusi, in cerinta se vrea ca end-device-urile **Leonardo** si **Croissant**
+(direct conectate la cele doua rutere)
+sa poate accesa si ele ambele capete de tunel.
+
+Pentru asta, imi doresc ca oricarui pachet ce pleaca de la **Leonardo**
+si vrea sa ajunga la capatul celalalt al tunelului privat (**Paris/wg-rl**),
+sa i se modifice adresa IP sursa (publica) cu adresa IP privata a interfetei `wg-rl` de pe **Milano**.
+
+```sh
+root@Milano:~# iptables -t nat -A POSTROUTING -s <IP-retea-Milano-Leonardo>/<mask> -d <IP-Paris/wg-rl>/<mask> -o wg-rl -j SNAT --to-source <IP-Milano/wg-rl>
+```
+
+Adica:
+
+```sh
+root@Milano:~# iptables -t nat -A POSTROUTING -s 10.179.7.128/26 -d 10.27.214.98/30 -o wg-rl -j SNAT --to-source 10.27.214.97
+```
+
+```sh
+# Pentru persistenta la restart
+root@Milano:~# iptables-save > /etc/iptables/rules.v4
+```
+
+
+**Leonardo** poate accesa acum ambele capete ale tunelului.
+
+Repetam procesul si pentru **Croissant**, schimband doar niste adrese IP:
+oricarui pachet ce pleaca de la **Croissant**
+si are ca destinatie capatul opus al tunelului (**Milano/wg-rl**),
+sa i se modifice adresa IP sursa (publica) cu adresa IP privata a interfetei `wg-rl` de pe **Paris**.
+
+
+```sh
+root@Pris:~# iptables -t nat -A POSTROUTING -s <IP-retea-Paris-Croissant>/<mask> -d <IP-Milano/wg-rl>/<>mask -o wg-rl -j SNAT --to-source <IP-Milano/wg-rl>
+```
+
+Adica:
+
+```sh
+root@Pris:~# iptables -t nat -A POSTROUTING -s 10.179.7.192/26 -d 10.27.214.97/30 -o wg0 -j SNAT --to-source 10.27.214.98
+```
+
+```sh
+# Pentru persistenta la restart
+root@Paris:~# iptables-save > /etc/iptables/rules.v4
+```
+
+**Croissant** poate accesa acum ambele capete ale tunelului.
+
 
