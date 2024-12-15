@@ -41,6 +41,7 @@
   - [Task 8 | Scanarea **pe Romulus** a **serverului mail** (SMTP si IMAP) **de pe Milano**](#task-8--scanarea-pe-romulus-a-serverului-mail-smtp-si-imap-de-pe-milano)
   - [Task 9 | Sincronizarea automata de pe **Remus** pe **Roma**](#task-9--sincronizarea-automata-de-pe-remus-pe-roma)
   - [Task 10 | **Wireguard tunnel**](#task-10--wireguard-tunnel)
+  - [Task 11 | Pin your hair](#task-11--pin-your-hair)
 
 ```
 t2start bogdan.trifan2412
@@ -1455,7 +1456,7 @@ student@Remus:~$ ssh student@Roma "mkdir -p ~/.ssh && cat >> ~/.ssh/authorized_k
 Adauga o noua intrare in fisierul de configuratie SSH a lui **Romus**:
 
 ```sh
-remus-backup@Remus:~$ nano -l ~/.ssh/config 
+student@Remus:~$ nano -l ~/.ssh/config 
 ```
 
 
@@ -1783,5 +1784,31 @@ root@Paris:~# iptables-save > /etc/iptables/rules.v4
 ```
 
 **Croissant** poate accesa acum ambele capete ale tunelului.
+
+
+
+## Task 11 | Pin your hair
+---
+
+Pe stația Milano va rula un serviciu securizat pe portul TCP 1000+$K care va asculta DOAR pe adresa wireguard creată la task-ul anterior (checkerul îl va porni automat; pentru testare puteți folosi nc cu argumentul -l și IP-ul WireGuard (+ desigur, portul), trebuie să puteți trimite mesaje bidirecționale prin portul forwardat).
+Configurați DNAT pe Paris astfel încât să poată primi conexiuni pe portul 1000+$K și să le forwardeze prin tunelul Wireguard către Milano, același port.
+Accesul la serviciu prin Paris:1000+$K va trebui să fie funcțional din orice rețea!
+Restricție: este obligatoriu să folosiți DOAR iptables și/sau rutare (care ar trebui să fie deja configurată la ex. anterior) pentru a rezolva acest exercițiu, e.g., nu e voie să folosiți un serviciu auxiliar care să asculte pe portul 1000+$K și să redirecționeze pachetele la Milano!
+Hint: folosiți tcpdump cu încredere când nu funcționează ceva ;)
+
+
+
+K=80
+
+
+```sh
+root@Paris:~# iptables -A FORWARD -d 10.27.214.97/32 -p tcp -m tcp --dport 1080 -j ACCEPT
+root@Paris:~# iptables -t nat -A PREROUTING -s 10.179.7.192/26 -p tcp -m tcp --dport 1080 -j DNAT --to-destination 10.27.214.97:1080
+root@Paris:~# iptables -t nat -A PREROUTING -p tcp -m tcp --dport 1080 -j DNAT --to-destination 10.27.214.97:1080
+root@Paris:~# iptables -t nat -A POSTROUTING -o wg-rl -j MASQUERADE
+root@Paris:~# iptables -t nat -A POSTROUTING -s 10.179.7.192/26 -d 10.27.214.96/30 -o wg-rl -j SNAT --to-source 10.27.214.98
+
+root@Paris:~# iptables-save > /etc/iptables/rules.v4
+```
 
 

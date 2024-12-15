@@ -1,30 +1,29 @@
 Host romu
 	User student
 	HostName Romulus
-	IdentityFile /home/student/.ssh/ssh-key-romu
+	IdentityFile /home/student/.ssh/romu
 
 Host remu
 	User student
 	HostName Remus
-	IdentityFile /home/student/.ssh/ssh-key-remu
+	IdentityFile /home/student/.ssh/remu
 
 Host leo
 	User student
 	HostName Leonardo
-	IdentityFile /home/student/.ssh/ssh-key-leo
-
+	IdentityFile /home/student/.ssh/leo
 
 
 
 Host Romulus
     HostName Romulus
-    IdentityFile /home/student/.ssh/ssh-key-romu
+    IdentityFile /home/student/.ssh/romu
 
 Host Remus
     HostName Remus
-    IdentityFile /home/student/.ssh/ssh-key-remu
+    IdentityFile /home/student/.ssh/remu
 
 
 Host Leonardo
     HostName Leonardo
-    IdentityFile /home/student/.ssh/ssh-key-leo
+    IdentityFile /home/student/.ssh/leo

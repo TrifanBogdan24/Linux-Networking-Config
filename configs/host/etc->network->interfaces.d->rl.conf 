@@ -25,5 +25,5 @@ iface to-rome inet6 static
 	gateway fdee:dada:106:171::2
 
 auto or-paris
-iface to-paris inet static
+iface or-paris inet static
 	address 172.30.106.245/30

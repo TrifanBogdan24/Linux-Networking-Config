@@ -10,3 +10,8 @@ Host Romulus
 Host Leonardo
     HostName Leonardo
     IdentityFile /home/student/.ssh/leo
+
+
+Host Roma
+	HostName Roma
+	IdentityFile /home/student/.ssh/roma
