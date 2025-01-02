@@ -1328,6 +1328,7 @@ Pe **Romulus**, am scris urmatorul script de **python**:
 
 
 
+
 ```sh
 student@Romulus:~$ touch scan-support-tickets
 student@Romulus:~$ chmod +x scan-support-tickets

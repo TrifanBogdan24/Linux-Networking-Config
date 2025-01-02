@@ -13,3 +13,4 @@ iptables -t nat -A PREROUTING -i to-rome -p udp -m udp --dport 9080 -j DNAT --to
 iptables -t nat -A PREROUTING -i or-paris -p udp -m udp --dport 9080 -j DNAT --to-destination 172.30.106.242:9080
 iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
 iptables-save
+iptables-save > /etc/iptables/rules.v4
