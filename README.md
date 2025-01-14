@@ -43,14 +43,11 @@
   - [Task 10 | **Wireguard tunnel**](#task-10--wireguard-tunnel)
   - [Task 11 | Pin your hair](#task-11--pin-your-hair)
 
-```
+```sh
 t2start bogdan.trifan2412
 ```
 
 
-```
-ip route add <adresa_retea>/<masca_subretea> via <gateway>
-```
 
 ## Topologie
 
@@ -295,24 +292,6 @@ Rezultat:
 
 
 
-In `~/.bashrc` de pe `host`:
-
-```sh
-export IP_R1_Roma_sw04="10.179.7.1/26"
-export IP_R1_Romulus="10.179.7.2/26"
-
-export IP_R2_Roma_sw05="10.179.7.65/26"
-export IP_R2_Milano_to_rome="10.179.7.66/26"
-export IP_R2_Remus="10.179.7.67/26"
-
-export IP_R3_Milano_eth_leo="10.179.7.129/26"
-export IP_R3_Leonardo="10.179.7.130/26"
-
-export IP_R4_Paris_eth_croiss="10.179.7.193/26"
-export IP_R4_Croissant="10.179.7.194/26"
-```
-
-
 ```sh
 # Pentru Reteaua 1 (VLAN 4)
 root@Roma:~# ip addr add $IP_R1_Roma_sw04 dev sw0.4
@@ -402,15 +381,6 @@ Rezultat:
     - R6-Host_or-paris: 172.30.106.245/30
     - R6-Paris_to_host: 172.30.106.246/30
 
-In `~/.bashrc` de pe `host`:
-
-```sh
-export IP_R5_Host_to_rome="172.30.106.241/30"
-export IP_R5_Roma_to_host="172.30.106.242/30"
-
-export IP_R6_Host_or_paris="172.30.106.245/30"
-export IP_R6_Paris_to_host="172.30.106.246/30"
-```
 
 
 ```sh
@@ -507,6 +477,10 @@ root@Paris:~# ip route add default via 172.30.106.245
 ---
 
 
+```sh
+ip route add <adresa_retea>/<masca_subretea> via <gateway>
+```
+
 Reminder:
 - Adresa IP retea R1: 10.179.7.0/26
 - Adresa IP retea R2: 10.179.7.64/26
@@ -515,15 +489,6 @@ Reminder:
 - Adresa IP retea R5: 172.30.106.240/30
 - Adresa IP retea R6: 172.30.106.245/30
 
-
-```sh
-export $IP_NETWORK_R1="10.179.7.0/26"
-export $IP_NETWORK_R2="10.179.7.64/26"
-export $IP_NETWORK_R3="10.179.7.128/26"
-export $IP_NETWORK_R4="10.179.7.192/26" 
-export $IP_NETWORK_R5="172.30.106.240/30"
-export $IP_NETWORK_R6="172.30.106.245/30"
-```
 
 
 Reminder:
@@ -539,22 +504,6 @@ Reminder:
 | host/to-rome    | R5    | 172.30.106.241/30 |
 | Roma/to-host    | R5    | 172.30.106.242/30 |
 
-
-```sh
-export IP_R1_Roma_sw04="10.179.7.1/26"
-export IP_R2_Roma_sw05="10.179.7.65/26"
-
-export IP_R2_Milano_to_rome="10.179.7.66"
-export IP_R3_Milano_eth_leo="10.179.7.129"
-
-export IP_R4_Paris_eth_croiss="10.179.7.193/26"
-
-export IP_R5_Host_to_rome="172.30.106.241"
-export IP_R5_Roma_to_host="172.30.106.242"
-
-export IP_R6_Host_or_paris="172.30.106.245"
-export IP_R6_Paris_to_host="172.30.106.246"
-```
 
 
 ```sh
@@ -583,6 +532,8 @@ root@Roma:~# ip route add 10.179.7.128/26 via 10.179.7.66
 ### Task 1.3 | Persistenta la restart
 ---
 
+Comenzile precedent mentionate nu sunt persistente la restart;
+IP-urile si rutele trebuiesc configurate intr-un fisier.
 
 Pentru fiecare router (inclusiv host),
 decomenteaza linia care contine `net.ipv4.ip_forward=1` (linia **28** ar trebui sa fie) din fisierul `/etc/sysctl.conf`.
@@ -608,18 +559,6 @@ Prima adresă asignabilă este pentru host, a doua a lui Roma.
 Configurați rutarea IPv6 pentru a permite comunicarea între toate sistemele cu adresă IPv6.
 Atenție: echipamentele Leonardo, Paris și Croissant NU vor avea adresă IPv6!
 
-
-```sh
-export IPv6_Roma_sw0.4="2024:baba:07:179:004::1/96"
-export IPv6_Romulus="2024:baba:07:179:004::2/96"
-
-export IPv6_Roma_sw0.5="2024:baba:07:179:005::1/96"
-export IPv6_Milano="2024:baba:07:179:005::2/96"
-export IPv6_Remus="2024:baba:07:179:005::3/96"
-
-export IPv6_Host_to_rome="fdee:dada:106:171::1/64"
-export IPv6_Roma_to_host="fdee:dada:106:171::2/64"
-```
 
 ```sh
 # VLAN 4
@@ -649,10 +588,6 @@ root@Milano:~# ip -6 route add default via 2024:baba:07:179:005::1
 root@Remus:~# ip -6 route add default via 2024:baba:07:179:005::1
 
 root@host:~# ip -6 route add default via fdee:dada:106:171::2
-
-
-# TODO: stiing ca Roma este switch-ul intermediat intre retelele VLAN 4, VLAN 5 si Host-Roma, adauga comenzi de "ip route add" static pentru a avea conectivitate intre toate sistemele setate cu adresa IPV6
-
 ```
 
 
